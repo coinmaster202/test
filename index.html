@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gmail Dot Variations</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+    }
+    .output {
+      margin-top: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Generate Gmail Dot Variations</h1>
+  <label for="email">Enter Gmail Address:</label>
+  <input type="text" id="email" placeholder="example@gmail.com">
+  <button onclick="generateVariations()">Generate</button>
+  <button id="download-btn" onclick="downloadTXT()" disabled>Download TXT</button>
+  <div id="result" class="output"></div>
+
+  <script>
+    let variations = [];
+
+    function generateVariations() {
+      const email = document.getElementById('email').value;
+      const resultDiv = document.getElementById('result');
+      const downloadBtn = document.getElementById('download-btn');
+      resultDiv.innerHTML = '';
+      variations = []; // Reset variations
+
+      // Validate email
+      if (!email || !email.endsWith('@gmail.com')) {
+        resultDiv.innerHTML = '<p style="color: red;">Please enter a valid Gmail address.</p>';
+        downloadBtn.disabled = true;
+        return;
+      }
+
+      const [username, domain] = email.split('@');
+
+      // Helper function to generate combinations
+      function getCombinations(array, length) {
+        if (length === 1) return array.map((el) => [el]);
+        const combos = [];
+        array.forEach((el, index) => {
+          const smallerCombos = getCombinations(array.slice(index + 1), length - 1);
+          smallerCombos.forEach((combo) => combos.push([el, ...combo]));
+        });
+        return combos;
+      }
+
+      // Generate all variations with dots
+      for (let r = 1; r < username.length; r++) {
+        const positions = Array.from({ length: username.length - 1 }, (_, i) => i + 1);
+        const combinations = getCombinations(positions, r);
+
+        combinations.forEach((combo) => {
+          let newEmail = username;
+          combo.forEach((pos, index) => {
+            newEmail = newEmail.slice(0, pos + index) + '.' + newEmail.slice(pos + index);
+          });
+          variations.push(newEmail + '@' + domain);
+        });
+      }
+
+      // Display results
+      const totalCount = variations.length;
+      resultDiv.innerHTML = `<p>Total new addresses: <strong>${totalCount}</strong></p>`;
+      resultDiv.innerHTML += '<ul>' + variations.slice(0, 100).map((v) => `<li>${v}</li>`).join('') + '</ul>';
+      if (totalCount > 100) {
+        resultDiv.innerHTML += `<p>Displaying first 100 variations out of ${totalCount}.</p>`;
+      }
+
+      // Enable download button
+      downloadBtn.disabled = totalCount === 0;
+    }
+
+    function downloadTXT() {
+      if (variations.length === 0) return;
+
+      // Create TXT content
+      const txtContent = variations.join("\n");
+      const blob = new Blob([txtContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+
+      // Create a link and trigger download
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "gmail_variations.txt";
+      document.body.appendChild(link);
+      link.click();
+
+      // Clean up
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
