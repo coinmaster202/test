@@ -6,13 +6,47 @@
   <title>OneTwoGmail</title> 
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
       margin: 20px;
+      background-color: #f4f7fa;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      color: #007bff;
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
     input, button, select {
-      padding: 10px;
+      padding: 12px 16px;
       font-size: 16px;
-      margin: 5px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
     }
     .output {
       margin-top: 20px;
@@ -20,47 +54,64 @@
       overflow-y: auto;
       border: 1px solid #ddd;
       padding: 10px;
+      background-color: #fafafa;
+      border-radius: 6px;
     }
     .instructions {
       margin-top: 20px;
-      border: 1px solid #ddd;
-      padding: 10px;
       background: #f9f9f9;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+    }
+    .instructions h2 {
+      color: #007bff;
+    }
+    .instructions ol {
+      margin-left: 20px;
+    }
+    .instructions li {
+      margin-bottom: 10px;
+    }
+    .hidden {
+      display: none;
     }
   </style>
 </head>
 <body>
+
   <h1>Generate Gmail Dot Variations</h1>
 
-  <label for="code">Enter 6-Digit Code:</label>
-  <input type="text" id="code" maxlength="6" placeholder="XXXXXX">
-  <button id="verify-btn" onclick="verifyCode()">Verify</button>
+  <div class="container">
+    <label for="code">Enter 6-Digit Code:</label>
+    <input type="text" id="code" maxlength="6" placeholder="XXXXXX">
+    <button id="verify-btn" onclick="verifyCode()">Verify</button>
 
-  <label for="accounts">Select Account Quantity:</label>
-  <select id="accounts" disabled>
-    <option value="15">15</option>
-    <option value="30" disabled>30</option>
-    <option value="60" disabled>60</option>
-    <option value="120" disabled>120</option>
-    <option value="unlimited" disabled>Unlimited</option>
-  </select>
+    <label for="accounts">Select Account Quantity:</label>
+    <select id="accounts" disabled>
+      <option value="15">15</option>
+      <option value="30" disabled>30</option>
+      <option value="60" disabled>60</option>
+      <option value="120" disabled>120</option>
+      <option value="unlimited" disabled>Unlimited</option>
+    </select>
 
-  <label for="email">Enter Gmail Address:</label>
-  <input type="text" id="email" placeholder="example@gmail.com" disabled>
-  <button id="generate-btn" onclick="generateVariations()" disabled>Generate</button>
-  <button id="download-btn" onclick="downloadTXT()" disabled>Download TXT</button>
-  <button id="download-codes-btn" onclick="downloadAccessCodes()">Download Access Codes</button>
+    <label for="email">Enter Gmail Address:</label>
+    <input type="text" id="email" placeholder="example@gmail.com" disabled>
+    <button id="generate-btn" onclick="generateVariations()" disabled>Generate</button>
+    <button id="download-btn" onclick="downloadTXT()" disabled>Download TXT</button>
 
-  <div id="result" class="output"></div>
+    <div id="result" class="output"></div>
 
-  <div class="instructions">
-    <h2>Instructions</h2>
-    <ol>
-      <li>Enter the 6-digit code provided to unlock features.</li>
-      <li>Select the account quantity from the dropdown (default: 15).</li>
-      <li>Enter a valid Gmail address and click 'Generate'.</li>
-      <li>Download the results as a TXT file if desired.</li>
-    </ol>
+    <div class="instructions">
+      <h2>Instructions</h2>
+      <ol>
+        <li>Enter the 6-digit code provided to unlock features.</li>
+        <li>Select the account quantity from the dropdown (default: 15).</li>
+        <li>Enter a valid Gmail address and click 'Generate'.</li>
+        <li>Download the results as a TXT file if desired.</li>
+      </ol>
+    </div>
   </div>
 
   <script>
@@ -68,7 +119,7 @@
     let verified = false;
     const generatedCodes = [];
 
-    // Generate 10,000 random access codes
+    // Generate 10,000 random 6-digit access codes
     function generateRandomCodes(numCodes) {
       for (let i = 0; i < numCodes; i++) {
         const randomCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -156,21 +207,6 @@
       const link = document.createElement("a");
       link.href = url;
       link.download = "gmail_variations.txt";
-      document.body.appendChild(link);
-      link.click();
-
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    }
-
-    function downloadAccessCodes() {
-      const txtContent = generatedCodes.join("\n");
-      const blob = new Blob([txtContent], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "access_codes.txt";
       document.body.appendChild(link);
       link.click();
 
