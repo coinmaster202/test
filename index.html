@@ -3,15 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gmail Dot Variations</title>
+  <title>OneTwoGmail</title> 
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
     }
-    input, button {
+    input, button, select {
       padding: 10px;
       font-size: 16px;
+      margin: 5px;
     }
     .output {
       margin-top: 20px;
@@ -20,27 +21,86 @@
       border: 1px solid #ddd;
       padding: 10px;
     }
+    .instructions {
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      padding: 10px;
+      background: #f9f9f9;
+    }
   </style>
 </head>
 <body>
   <h1>Generate Gmail Dot Variations</h1>
+
+  <label for="code">Enter 6-Digit Code:</label>
+  <input type="text" id="code" maxlength="6" placeholder="XXXXXX">
+  <button id="verify-btn" onclick="verifyCode()">Verify</button>
+
+  <label for="accounts">Select Account Quantity:</label>
+  <select id="accounts" disabled>
+    <option value="15">15</option>
+    <option value="30" disabled>30</option>
+    <option value="60" disabled>60</option>
+    <option value="120" disabled>120</option>
+    <option value="unlimited" disabled>Unlimited</option>
+  </select>
+
   <label for="email">Enter Gmail Address:</label>
-  <input type="text" id="email" placeholder="example@gmail.com">
-  <button onclick="generateVariations()">Generate</button>
+  <input type="text" id="email" placeholder="example@gmail.com" disabled>
+  <button id="generate-btn" onclick="generateVariations()" disabled>Generate</button>
   <button id="download-btn" onclick="downloadTXT()" disabled>Download TXT</button>
+  <button id="download-codes-btn" onclick="downloadAccessCodes()">Download Access Codes</button>
+
   <div id="result" class="output"></div>
+
+  <div class="instructions">
+    <h2>Instructions</h2>
+    <ol>
+      <li>Enter the 6-digit code provided to unlock features.</li>
+      <li>Select the account quantity from the dropdown (default: 15).</li>
+      <li>Enter a valid Gmail address and click 'Generate'.</li>
+      <li>Download the results as a TXT file if desired.</li>
+    </ol>
+  </div>
 
   <script>
     let variations = [];
+    let verified = false;
+    const generatedCodes = [];
+
+    // Generate 10,000 random access codes
+    function generateRandomCodes(numCodes) {
+      for (let i = 0; i < numCodes; i++) {
+        const randomCode = Math.floor(100000 + Math.random() * 900000).toString();
+        generatedCodes.push(randomCode);
+      }
+    }
+
+    // Call the random code generation on page load
+    generateRandomCodes(10000);
+
+    function verifyCode() {
+      const code = document.getElementById('code').value;
+      if (generatedCodes.includes(code)) {
+        verified = true;
+        document.getElementById('email').disabled = false;
+        document.getElementById('generate-btn').disabled = false;
+        document.getElementById('accounts').disabled = false;
+        alert("Code verified successfully! You can now generate Gmail variations.");
+      } else {
+        alert("Invalid code. Please try again.");
+      }
+    }
 
     function generateVariations() {
       const email = document.getElementById('email').value;
       const resultDiv = document.getElementById('result');
       const downloadBtn = document.getElementById('download-btn');
+      const accountQuantity = document.getElementById('accounts').value;
+
       resultDiv.innerHTML = '';
       variations = []; // Reset variations
 
-      // Validate email
       if (!email || !email.endsWith('@gmail.com')) {
         resultDiv.innerHTML = '<p style="color: red;">Please enter a valid Gmail address.</p>';
         downloadBtn.disabled = true;
@@ -48,24 +108,18 @@
       }
 
       const [username, domain] = email.split('@');
+      const limit = parseInt(accountQuantity);
 
-      // Helper function to generate combinations
-      function getCombinations(array, length) {
-        if (length === 1) return array.map((el) => [el]);
-        const combos = [];
-        array.forEach((el, index) => {
-          const smallerCombos = getCombinations(array.slice(index + 1), length - 1);
-          smallerCombos.forEach((combo) => combos.push([el, ...combo]));
-        });
-        return combos;
-      }
-
-      // Generate all variations with dots
+      // Generate dot variations
       for (let r = 1; r < username.length; r++) {
+        if (variations.length >= limit) break;
+
         const positions = Array.from({ length: username.length - 1 }, (_, i) => i + 1);
         const combinations = getCombinations(positions, r);
 
         combinations.forEach((combo) => {
+          if (variations.length >= limit) return;
+
           let newEmail = username;
           combo.forEach((pos, index) => {
             newEmail = newEmail.slice(0, pos + index) + '.' + newEmail.slice(pos + index);
@@ -77,31 +131,49 @@
       // Display results
       const totalCount = variations.length;
       resultDiv.innerHTML = `<p>Total new addresses: <strong>${totalCount}</strong></p>`;
-      resultDiv.innerHTML += '<ul>' + variations.slice(0, 100).map((v) => `<li>${v}</li>`).join('') + '</ul>';
-      if (totalCount > 100) {
-        resultDiv.innerHTML += `<p>Displaying first 100 variations out of ${totalCount}.</p>`;
-      }
+      resultDiv.innerHTML += '<ul>' + variations.map((v) => `<li>${v}</li>`).join('') + '</ul>';
 
-      // Enable download button
       downloadBtn.disabled = totalCount === 0;
+    }
+
+    function getCombinations(array, length) {
+      if (length === 1) return array.map((el) => [el]);
+      const combos = [];
+      array.forEach((el, index) => {
+        const smallerCombos = getCombinations(array.slice(index + 1), length - 1);
+        smallerCombos.forEach((combo) => combos.push([el, ...combo]));
+      });
+      return combos;
     }
 
     function downloadTXT() {
       if (variations.length === 0) return;
 
-      // Create TXT content
       const txtContent = variations.join("\n");
       const blob = new Blob([txtContent], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
 
-      // Create a link and trigger download
       const link = document.createElement("a");
       link.href = url;
       link.download = "gmail_variations.txt";
       document.body.appendChild(link);
       link.click();
 
-      // Clean up
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadAccessCodes() {
+      const txtContent = generatedCodes.join("\n");
+      const blob = new Blob([txtContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "access_codes.txt";
+      document.body.appendChild(link);
+      link.click();
+
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     }
