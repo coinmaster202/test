@@ -3,124 +3,202 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Departure Message</title>
+  <title>One Two Gmail Generator</title>
   <style>
+    /* Existing styles */
     body {
-      background: radial-gradient(circle, #000000, #1b1b1b);
-      color: #ffffff;
-      font-family: 'Arial', sans-serif;
-      text-align: center;
-      padding: 50px;
+      font-family: Arial, sans-serif;
       margin: 0;
-      transition: background 1s, color 1s;
+      padding: 0;
+      background-color: #f3f4f6;
     }
-
-    h1 {
-      font-size: 3rem;
-      color: #ff0000;
-      text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
-      animation: pulse 2s infinite;
+    header {
+      background-color: #0078d7;
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
-
-    p {
-      font-size: 1.5rem;
-      color: #bbbbbb;
-      margin: 20px 0;
+    header h1 {
+      font-size: 2.5rem;
+      margin: 0;
     }
-
-    a {
-      color: #00ffcc;
-      text-decoration: none;
+    main {
+      padding: 20px;
+      max-width: 800px;
+      margin: 30px auto;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
       font-weight: bold;
     }
-
-    .lightsaber {
-      width: 10px;
-      height: 300px;
-      margin: 50px auto;
-      background: linear-gradient(to top, #ff0000 0%, #ff5555 100%);
-      box-shadow: 0 0 20px #ff0000, 0 0 50px #ff0000;
-      transform-origin: bottom;
-      animation: swing 2s infinite ease-in-out;
-      transition: background 1s, box-shadow 1s;
-    }
-
-    .hilt {
-      width: 30px;
-      height: 50px;
-      background: #333;
-      margin: 0 auto;
-      border: 3px solid #666;
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      width: 100%;
       border-radius: 5px;
+      border: 1px solid #ddd;
     }
-
-    .button {
-      background: #00ffcc;
-      color: #000;
-      font-size: 1.2rem;
-      border: none;
-      padding: 10px 20px;
+    button {
       cursor: pointer;
+      background-color: #0078d7;
+      color: white;
+      border: none;
+    }
+    .output {
       margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      background-color: #fff;
       border-radius: 5px;
-      transition: background 0.3s, color 0.3s;
     }
-
-    .button:hover {
-      background: #009999;
-      color: #fff;
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
-      }
-      50% {
-        text-shadow: 0 0 40px #ff3333, 0 0 60px #ff3333;
-      }
-    }
-
-    @keyframes swing {
-      0%, 100% {
-        transform: rotate(-10deg);
-      }
-      50% {
-        transform: rotate(10deg);
-      }
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px;
     }
   </style>
 </head>
 <body>
-  <h1 id="message-title">I’ll Be Back to Rule the Galaxy...</h1>
-  <div class="lightsaber" id="lightsaber"></div>
-  <div class="hilt"></div>
-  <p id="message-text">
-    This isn’t the end—just a momentary retreat to gather our strength and prepare for something even more powerful.  
-    <br><br>
-    The Force remains strong, and when we return, you’ll witness the full might of what we’ve been working on.
-  </p>
-  <p id="cta-text">
-    <strong>Until then, the Dark Side awaits your loyalty. Follow our journey <a href="#">here</a> and stay vigilant.</strong>
-  </p>
-  <button class="button" onclick="switchToLightSide()">Take Me to the Light Side</button>
+  <header>
+    <h1>One Two Gmail Generator</h1>
+  </header>
+  <main>
+    <!-- Access code feature -->
+    <label for="access-code">Enter Access Code:</label>
+    <input type="password" id="access-code" placeholder="Enter your access code">
+    <button id="access-btn" onclick="validateAccess()">Submit Access Code</button>
+
+    <!-- Gmail Generator -->
+    <div id="generator-section" style="display: none;">
+      <label for="email">Enter Gmail Address:</label>
+      <input type="text" id="email" placeholder="example@gmail.com" disabled>
+      <button id="generate-btn" onclick="generateVariations()" disabled>Generate</button>
+      <div class="dropdown">
+        <button id="download-btn" disabled>Download ▼</button>
+        <div class="dropdown-content">
+          <button onclick="downloadFile('txt')">Download as TXT</button>
+          <button onclick="downloadFile('csv')">Download as CSV</button>
+        </div>
+      </div>
+      <div id="result" class="output"></div>
+    </div>
+  </main>
+  <footer>
+    <p>&copy; 2025 One Two Gmail Generator</p>
+  </footer>
 
   <script>
-    function switchToLightSide() {
-      // Change background and text colors
-      document.body.style.background = "radial-gradient(circle, #000040, #001b80)";
-      document.body.style.color = "#ffffff";
+    // Access codes from the uploaded file
+    const validAccessCodes = [
+      721320, 639873, 751249, 235394, 772913 /* Add the rest of the numbers here */
+    ];
 
-      // Change the lightsaber color to blue
-      const lightsaber = document.getElementById('lightsaber');
-      lightsaber.style.background = "linear-gradient(to top, #0000ff 0%, #5555ff 100%)";
-      lightsaber.style.boxShadow = "0 0 20px #0000ff, 0 0 50px #5555ff";
+    function validateAccess() {
+      const accessCode = document.getElementById('access-code').value.trim();
+      const generatorSection = document.getElementById('generator-section');
+      const emailInput = document.getElementById('email');
+      const generateBtn = document.getElementById('generate-btn');
 
-      // Update the message for the Light Side
-      document.getElementById('message-title').innerText = "May the Force Be With You...";
-      document.getElementById('message-text').innerText = 
-        "The Light Side of the Force calls to you. A path of hope, balance, and a brighter tomorrow awaits.";
-      document.getElementById('cta-text').innerHTML = 
-        "<strong>Stay on this path and bring balance to the Force. Follow our journey <a href='#'>here</a> and shine brightly.</strong>";
+      if (validAccessCodes.includes(Number(accessCode))) {
+        alert("Access granted!");
+        generatorSection.style.display = "block"; // Show generator section
+        emailInput.disabled = false; // Enable email input
+        generateBtn.disabled = false; // Enable generate button
+      } else {
+        alert("Invalid access code. Please try again.");
+      }
+    }
+
+    // Gmail Generator functions remain the same
+    let variations = [];
+
+    function generateVariations() {
+      const email = document.getElementById('email').value.trim();
+      const resultDiv = document.getElementById('result');
+      const downloadBtn = document.getElementById('download-btn');
+      resultDiv.innerHTML = '';
+      variations = []; // Reset variations
+
+      // Validate email
+      if (!email || !email.endsWith('@gmail.com')) {
+        resultDiv.innerHTML = '<p style="color: red;">Please enter a valid Gmail address.</p>';
+        downloadBtn.disabled = true;
+        return;
+      }
+
+      const [username, domain] = email.split('@');
+
+      // Helper function to generate combinations
+      function getCombinations(array, length) {
+        if (length === 1) return array.map((el) => [el]);
+        const combos = [];
+        array.forEach((el, index) => {
+          const smallerCombos = getCombinations(array.slice(index + 1), length - 1);
+          smallerCombos.forEach((combo) => combos.push([el, ...combo]));
+        });
+        return combos;
+      }
+
+      // Generate all variations with dots
+      for (let r = 1; r < username.length; r++) {
+        const positions = Array.from({ length: username.length - 1 }, (_, i) => i + 1);
+        const combinations = getCombinations(positions, r);
+
+        combinations.forEach((combo) => {
+          let newEmail = username;
+          combo.forEach((pos, index) => {
+            newEmail = newEmail.slice(0, pos + index) + '.' + newEmail.slice(pos + index);
+          });
+          variations.push(newEmail + '@' + domain);
+        });
+      }
+
+      // Display results
+      const totalCount = variations.length;
+      resultDiv.innerHTML = `<p>Total new addresses: <strong>${totalCount}</strong></p>`;
+      resultDiv.innerHTML += '<ul>' + variations.slice(0, 100).map((v) => `<li>${v}</li>`).join('') + '</ul>';
+      if (totalCount > 100) {
+        resultDiv.innerHTML += `<p>Displaying first 100 variations out of ${totalCount}.</p>`;
+      }
+
+      // Enable download button
+      downloadBtn.disabled = totalCount === 0;
+    }
+
+    function downloadFile(type) {
+      if (variations.length === 0) return;
+
+      let content = '';
+      let mimeType = '';
+      let extension = '';
+
+      if (type === 'txt') {
+        content = variations.join("\n");
+        mimeType = 'text/plain';
+        extension = 'txt';
+      } else if (type === 'csv') {
+        content = variations.join("\n");
+        mimeType = 'text/csv';
+        extension = 'csv';
+      }
+
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `gmail_variations.${extension}`;
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     }
   </script>
 </body>
