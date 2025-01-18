@@ -136,6 +136,7 @@
     let usedOneTimeCodes = [];
     let isMasterAccess = false;
     let maxVariations = 100;
+    let variations = [];
 
     function validateAccess() {
       const accessCode = Number(document.getElementById('access-code').value.trim());
@@ -172,7 +173,84 @@
       }
     }
 
-    // Gmail Generator logic remains unchanged
+    function generateVariations() {
+      const email = document.getElementById('email').value.trim();
+      const resultDiv = document.getElementById('result');
+      const downloadBtn = document.getElementById('download-btn');
+      resultDiv.innerHTML = '';
+      variations = []; // Reset variations
+
+      if (!email || !email.endsWith('@gmail.com')) {
+        resultDiv.innerHTML = '<p style="color: red;">Please enter a valid Gmail address.</p>';
+        downloadBtn.disabled = true;
+        return;
+      }
+
+      const [username, domain] = email.split('@');
+
+      // Helper function to generate dot combinations
+      function getDotVariations(username) {
+        const variations = [];
+        const len = username.length;
+        const max = 1 << (len - 1); // Total combinations of dot placements (2^(len-1))
+
+        for (let i = 0; i < max; i++) {
+          let variation = username[0];
+          for (let j = 0; j < len - 1; j++) {
+            if (i & (1 << j)) {
+              variation += '.';
+            }
+            variation += username[j + 1];
+          }
+          variations.push(variation + '@' + domain);
+        }
+        return variations;
+      }
+
+      // Generate variations
+      variations = getDotVariations(username);
+
+      // Limit the number of variations based on access level
+      variations = variations.slice(0, maxVariations);
+
+      // Display results
+      const totalCount = variations.length;
+      resultDiv.innerHTML = `<p>Total new addresses: <strong>${totalCount}</strong></p>`;
+      resultDiv.innerHTML += '<ul>' + variations.map((v) => `<li>${v}</li>`).join('') + '</ul>';
+
+      // Enable download button if there are variations
+      downloadBtn.disabled = variations.length === 0;
+    }
+
+    function downloadFile(type) {
+      if (variations.length === 0) return;
+
+      let content = '';
+      let mimeType = '';
+      let extension = '';
+
+      if (type === 'txt') {
+        content = variations.join("\n");
+        mimeType = 'text/plain';
+        extension = 'txt';
+      } else if (type === 'csv') {
+        content = variations.join("\n");
+        mimeType = 'text/csv';
+        extension = 'csv';
+      }
+
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `gmail_variations.${extension}`;
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
   </script>
 </body>
 </html>
