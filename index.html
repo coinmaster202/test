@@ -49,6 +49,37 @@
       color: white;
       border: none;
     }
+    button[disabled] {
+      background-color: #b0c4de;
+      cursor: not-allowed;
+    }
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #fff;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+      border-radius: 5px;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .dropdown-content button {
+      width: 100%;
+      border: none;
+      padding: 10px;
+      text-align: left;
+      background: white;
+      cursor: pointer;
+    }
+    .dropdown-content button:hover {
+      background-color: #f1f1f1;
+    }
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
     .output {
       margin-top: 20px;
       padding: 10px;
@@ -68,23 +99,26 @@
     <h1>One Two Gmail Generator</h1>
   </header>
   <main>
-    <label for="access-code">Enter Access Code:</label>
-    <input type="password" id="access-code" placeholder="Enter your access code">
-    <button id="access-btn" onclick="validateAccess()">Submit Access Code</button>
+    <section>
+      <label for="access-code">Enter Access Code:</label>
+      <input type="password" id="access-code" placeholder="Enter your access code">
+      <button id="access-btn">Submit Access Code</button>
+    </section>
 
-    <div id="generator-section" style="display: none;">
+    <section id="generator-section" style="display: none;">
       <label for="email">Enter Gmail Address:</label>
       <input type="text" id="email" placeholder="example@gmail.com" disabled>
-      <button id="generate-btn" onclick="generateVariations()" disabled>Generate</button>
+      <button id="generate-btn" disabled>Generate Variations</button>
+      <button id="copy-btn" disabled>Copy Variations</button>
       <div class="dropdown">
         <button id="download-btn" disabled>Download ▼</button>
         <div class="dropdown-content">
-          <button onclick="downloadFile('txt')">Download as TXT</button>
-          <button onclick="downloadFile('csv')">Download as CSV</button>
+          <button data-type="txt">Download as TXT</button>
+          <button data-type="csv">Download as CSV</button>
         </div>
       </div>
       <div id="result" class="output"></div>
-    </div>
+    </section>
   </main>
   <footer>
     <p>&copy; 2025 One Two Gmail Generator</p>
@@ -92,7 +126,6 @@
 
   <script>
     const masterAccessCode = 2025;
-
     const validAccessCodes = [
       264431, 936066, 613903, 234711, 737793, 162538, 140038, 199699, 879582,
       688226, 451731, 959448, 741403, 135777, 866920, 426496, 662141, 144720,
@@ -117,7 +150,6 @@
       887124, 292263, 370179, 349426, 762765, 282436, 200226, 384891, 489894,
       976323, 388285, 548090, 623865, 236684, 239724, 163902
     ];
-
     const oneTimeAccessCodes = [
       872668, 194629, 779934, 693988, 523732, 267112, 215859, 797208, 490208,
       998905, 164773, 694171, 167944, 702335, 430903, 236761, 952638, 430053,
@@ -132,125 +164,6 @@
       681082, 224456, 620434, 784502, 638078, 897720, 819542, 851111, 434515,
       530084
     ];
-
-    let usedOneTimeCodes = [];
-    let isMasterAccess = false;
-    let maxVariations = 100;
-    let variations = [];
-
-    function validateAccess() {
-      const accessCode = Number(document.getElementById('access-code').value.trim());
-      const generatorSection = document.getElementById('generator-section');
-      const emailInput = document.getElementById('email');
-      const generateBtn = document.getElementById('generate-btn');
-
-      if (accessCode === masterAccessCode) {
-        alert("Access granted! Master access enabled.");
-        isMasterAccess = true;
-        maxVariations = Infinity;
-        generatorSection.style.display = "block";
-        emailInput.disabled = false;
-        generateBtn.disabled = false;
-      } else if (validAccessCodes.includes(accessCode)) {
-        alert("Access granted! Limited to 100 variations.");
-        isMasterAccess = false;
-        maxVariations = 100;
-        generatorSection.style.display = "block";
-        emailInput.disabled = false;
-        generateBtn.disabled = false;
-      } else if (oneTimeAccessCodes.includes(accessCode) && !usedOneTimeCodes.includes(accessCode)) {
-        alert("Access granted! Limited to 30 variations (one-time use).");
-        isMasterAccess = false;
-        maxVariations = 30;
-        usedOneTimeCodes.push(accessCode); // Mark the code as used
-        generatorSection.style.display = "block";
-        emailInput.disabled = false;
-        generateBtn.disabled = false;
-      } else if (usedOneTimeCodes.includes(accessCode)) {
-        alert("This access code has already been used.");
-      } else {
-        alert("Invalid access code. Please try again.");
-      }
-    }
-
-    function generateVariations() {
-      const email = document.getElementById('email').value.trim();
-      const resultDiv = document.getElementById('result');
-      const downloadBtn = document.getElementById('download-btn');
-      resultDiv.innerHTML = '';
-      variations = []; // Reset variations
-
-      if (!email || !email.endsWith('@gmail.com')) {
-        resultDiv.innerHTML = '<p style="color: red;">Please enter a valid Gmail address.</p>';
-        downloadBtn.disabled = true;
-        return;
-      }
-
-      const [username, domain] = email.split('@');
-
-      // Helper function to generate dot combinations
-      function getDotVariations(username) {
-        const variations = [];
-        const len = username.length;
-        const max = 1 << (len - 1); // Total combinations of dot placements (2^(len-1))
-
-        for (let i = 0; i < max; i++) {
-          let variation = username[0];
-          for (let j = 0; j < len - 1; j++) {
-            if (i & (1 << j)) {
-              variation += '.';
-            }
-            variation += username[j + 1];
-          }
-          variations.push(variation + '@' + domain);
-        }
-        return variations;
-      }
-
-      // Generate variations
-      variations = getDotVariations(username);
-
-      // Limit the number of variations based on access level
-      variations = variations.slice(0, maxVariations);
-
-      // Display results
-      const totalCount = variations.length;
-      resultDiv.innerHTML = `<p>Total new addresses: <strong>${totalCount}</strong></p>`;
-      resultDiv.innerHTML += '<ul>' + variations.map((v) => `<li>${v}</li>`).join('') + '</ul>';
-
-      // Enable download button if there are variations
-      downloadBtn.disabled = variations.length === 0;
-    }
-
-    function downloadFile(type) {
-      if (variations.length === 0) return;
-
-      let content = '';
-      let mimeType = '';
-      let extension = '';
-
-      if (type === 'txt') {
-        content = variations.join("\n");
-        mimeType = 'text/plain';
-        extension = 'txt';
-      } else if (type === 'csv') {
-        content = variations.join("\n");
-        mimeType = 'text/csv';
-        extension = 'csv';
-      }
-
-      const blob = new Blob([content], { type: mimeType });
-      const url = URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `gmail_variations.${extension}`;
-      document.body.appendChild(link);
-      link.click();
-
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    }
   </script>
 </body>
 </html>
