@@ -58,7 +58,7 @@
     }
     .spinner {
       display: none;
-      margin: 0 auto;
+      margin: 20px auto;
       border: 4px solid #ddd;
       border-top: 4px solid #0078d7;
       border-radius: 50%;
@@ -76,33 +76,6 @@
       border: 1px solid #ddd;
       background-color: #fff;
       border-radius: 5px;
-    }
-    .dropdown {
-      position: relative;
-      display: inline-block;
-    }
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      background-color: #fff;
-      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-      border-radius: 5px;
-      overflow: hidden;
-      z-index: 1;
-    }
-    .dropdown-content button {
-      width: 100%;
-      border: none;
-      padding: 10px;
-      text-align: left;
-      background: white;
-      cursor: pointer;
-    }
-    .dropdown-content button:hover {
-      background-color: #f1f1f1;
-    }
-    .dropdown:hover .dropdown-content {
-      display: block;
     }
     footer {
       text-align: center;
@@ -128,13 +101,7 @@
       <p>@gmail.com</p>
       <button id="generate-btn" disabled>Generate Variations</button>
       <button id="copy-btn" disabled>Copy Variations</button>
-      <div class="dropdown">
-        <button id="download-btn" disabled>Download ▼</button>
-        <div class="dropdown-content">
-          <button data-type="txt">Download as TXT</button>
-          <button data-type="csv">Download as CSV</button>
-        </div>
-      </div>
+      <button id="download-btn" disabled>Download Variations</button>
       <div id="result" class="output" aria-live="polite"></div>
     </section>
 
@@ -145,58 +112,120 @@
   </footer>
 
   <script>
+    // Access Codes
     const masterAccessCode = 2025;
     const validAccessCodes = [
       264431, 936066, 613903, 234711, 737793, 162538, 140038, 199699, 879582,
-      688226, 451731, 959448, 741403, 135777, 866920, 426496, 662141, 144720,
-      739122, 890550, 532459, 409891, 644191, 998019, 983131, 120398, 772648,
-      776418, 641075, 229289, 830015, 211789, 882463, 585385, 332421, 258162,
-      454802, 255567, 361005, 133933, 180547, 528775, 347335, 227660, 347947,
-      577111, 342094, 954293, 278685, 917213, 282707, 905035, 494856, 333864,
-      300093, 809351, 455249, 850575, 283663, 218553, 733125, 588936, 730794,
-      272913, 191360, 635618, 503833, 149853, 552817, 919780, 627355, 253479,
-      477402, 840158, 281341, 188155, 231698, 243178, 166692, 527220, 892532,
-      736528, 226773, 462705, 556642, 300227, 842284, 229799, 762952, 751031,
-      260920, 349528, 786962, 532693, 357360, 143239, 832119, 904673, 927832,
-      851101, 379505, 353401, 760556, 231229, 565596, 679036, 304129, 523353,
-      642077, 900471, 784664, 776080, 164806, 761024, 173634, 880778, 778542,
-      525525, 123345, 191448, 630974, 229552, 412276, 529975, 323585, 378656,
-      254392, 895912, 116827, 323658, 666629, 786938, 730972, 978340, 101413,
-      476438, 502916, 518453, 296176, 199020, 963490, 894315, 120174, 715208,
-      913853, 223201, 789023, 207489, 228950, 349284, 842707, 804642, 424211,
-      542809, 190581, 572764, 731870, 604577, 437775, 844930, 196670, 231343,
-      967408, 772418, 557043, 437017, 680877, 293418, 980968, 178168, 696479,
-      902701, 135180, 253743, 518367, 343651, 673487, 912757, 926551, 115977,
-      887124, 292263, 370179, 349426, 762765, 282436, 200226, 384891, 489894,
-      976323, 388285, 548090, 623865, 236684, 239724, 163902
+      688226, 451731, 959448, 741403, 135777, 866920, 426496, 662141, 144720
     ];
     const oneTimeAccessCodes = [
       872668, 194629, 779934, 693988, 523732, 267112, 215859, 797208, 490208,
-      998905, 164773, 694171, 167944, 702335, 430903, 236761, 952638, 430053,
-      554862, 382887, 566074, 438473, 619542, 448288, 692089, 529403, 562141,
-      122696, 949219, 429603, 134497, 446365, 177090, 911551, 292025, 208208,
-      655807, 966393, 708181, 595592, 258278, 902214, 687354, 100475, 286223,
-      860298, 669626, 756930, 548180, 775828, 213315, 270302, 258518, 772485,
-      155924, 503626, 524793, 214261, 978212, 874697, 892914, 561408, 726882,
-      948870, 495652, 981969, 449119, 148214, 401242, 929225, 490581, 375846,
-      455646, 564249, 536108, 452346, 516834, 251776, 419890, 532522, 210509,
-      364262, 805503, 760545, 808984, 290140, 205065, 134566, 195767, 116406,
-      681082, 224456, 620434, 784502, 638078, 897720, 819542, 851111, 434515,
-      530084
+      998905, 164773, 694171, 167944, 702335, 430903, 236761, 952638, 430053
     ];
 
+    // State Variables
     let usedOneTimeCodes = [];
-    let maxVariations = 100;
-    let variations = [];
+    let maxVariations = 0;
+    let generatedVariations = [];
 
-    const spinner = document.getElementById('loading-screen');
-    const accessBtn = document.getElementById('access-btn');
-    const generateBtn = document.getElementById('generate-btn');
-    const copyBtn = document.getElementById('copy-btn');
-    const downloadBtn = document.getElementById('download-btn');
-    const usernameInput = document.getElementById('username');
-    const resultDiv = document.getElementById('result');
+    // DOM Elements
+    const accessBtn = document.getElementById("access-btn");
+    const generateBtn = document.getElementById("generate-btn");
+    const copyBtn = document.getElementById("copy-btn");
+    const downloadBtn = document.getElementById("download-btn");
+    const resultDiv = document.getElementById("result");
+    const usernameInput = document.getElementById("username");
+    const spinner = document.getElementById("loading-screen");
+    const generatorSection = document.getElementById("generator-section");
 
-    function validateAccessCode() {}
-    generateVariations() {}
+    // Event Listeners
+    accessBtn.addEventListener("click", validateAccessCode);
+    generateBtn.addEventListener("click", generateVariations);
+    copyBtn.addEventListener("click", copyToClipboard);
+    downloadBtn.addEventListener("click", downloadVariations);
+
+    // Helper Functions
+    function showLoading(show) {
+      spinner.style.display = show ? "block" : "none";
+    }
+
+    function validateAccessCode() {
+      const accessCode = Number(document.getElementById("access-code").value.trim());
+      showLoading(true);
+
+      setTimeout(() => {
+        if (accessCode === masterAccessCode) {
+          enableGenerator("Master access granted. Unlimited variations.", Infinity);
+        } else if (validAccessCodes.includes(accessCode)) {
+          enableGenerator("Access granted. Up to 100 variations allowed.", 100);
+        } else if (oneTimeAccessCodes.includes(accessCode) && !usedOneTimeCodes.includes(accessCode)) {
+          enableGenerator("Access granted. Up to 30 variations allowed (one-time).", 30);
+          usedOneTimeCodes.push(accessCode); // Mark code as used
+        } else if (usedOneTimeCodes.includes(accessCode)) {
+          alert("This access code has already been used.");
+        } else {
+          alert("Invalid access code. Please try again.");
+        }
+        showLoading(false);
+      }, 1000);
+    }
+
+    function enableGenerator(message, variationLimit) {
+      alert(message);
+      maxVariations = variationLimit;
+      generatorSection.style.display = "block";
+      generateBtn.disabled = false;
+    }
+
+    function generateVariations() {
+      const username = usernameInput.value.trim();
+      if (!username) {
+        alert("Please enter a valid Gmail username.");
+        return;
+      }
+
+      const email = `${username}@gmail.com`;
+      showLoading(true);
+
+      setTimeout(() => {
+        generatedVariations = getDotVariations(username).slice(0, maxVariations);
+        resultDiv.innerHTML = `<p><strong>${generatedVariations.length}</strong> variations generated for: <strong>${email}</strong></p>`;
+        resultDiv.innerHTML += `<ul>${generatedVariations.map(variation => `<li>${variation}</li>`).join("")}</ul>`;
+        copyBtn.disabled = false;
+        downloadBtn.disabled = false;
+        showLoading(false);
+      }, 1500);
+    }
+
+    function getDotVariations(username) {
+      const variations = [];
+      const maxCombinations = 1 << (username.length - 1);
+
+      for (let i = 0; i < maxCombinations; i++) {
+        let variation = username[0];
+        for (let j = 0; j < username.length - 1; j++) {
+          if (i & (1 << j)) variation += ".";
+          variation += username[j + 1];
+        }
+        variations.push(`${variation}@gmail.com`);
+      }
+      return variations;
+    }
+
+    function copyToClipboard() {
+      navigator.clipboard.writeText(generatedVariations.join("\n"))
+        .then(() => alert("Variations copied to clipboard!"))
+        .catch(() => alert("Failed to copy variations."));
+    }
+
+    function downloadVariations() {
+      const content = generatedVariations.join("\n");
+      const blob = new Blob([content], { type: "text/plain" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "gmail_variations.txt";
+      link.click();
+    }
   </script>
+</body>
+</html>
