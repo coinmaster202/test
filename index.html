@@ -9,10 +9,10 @@
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f3f4f6;
+      background-color: #f7f9fb;
     }
     header {
-      background-color: #0078d7;
+      background-color: #008080;
       color: white;
       padding: 30px 20px;
       text-align: center;
@@ -38,29 +38,58 @@
       margin-bottom: 10px;
       font-weight: bold;
     }
-    input, button {
+    input {
       padding: 10px;
       font-size: 16px;
       margin-bottom: 20px;
       width: 100%;
       border-radius: 5px;
       border: 1px solid #ddd;
+      box-sizing: border-box;
+      position: relative;
+    }
+    input::after {
+      content: "@gmail.com";
+      font-size: 0.9em;
+      color: #aaa;
+      position: absolute;
+      right: 10px;
+      top: calc(50% - 12px);
+    }
+    input.email-input {
+      padding-right: 100px;
+      position: relative;
+    }
+    input.email-input::placeholder {
+      color: transparent;
+    }
+    input.email-input:focus::placeholder {
+      color: #ddd;
     }
     button {
       cursor: pointer;
-      background-color: #0078d7;
-      color: white;
+      padding: 10px;
+      font-size: 16px;
       border: none;
+      border-radius: 5px;
+      width: 100%;
+      background-color: #008080;
+      color: white;
+      margin-bottom: 20px;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #006666;
     }
     button[disabled] {
-      background-color: #b0c4de;
+      background-color: #b0c4c4;
       cursor: not-allowed;
     }
     .spinner {
       display: none;
       margin: 20px auto;
       border: 4px solid #ddd;
-      border-top: 4px solid #0078d7;
+      border-top: 4px solid #008080;
       border-radius: 50%;
       width: 40px;
       height: 40px;
@@ -81,6 +110,8 @@
       text-align: center;
       margin-top: 30px;
       padding: 20px;
+      background-color: #f1f1f1;
+      color: #555;
     }
   </style>
 </head>
@@ -97,8 +128,7 @@
 
     <section id="generator-section" style="display: none;">
       <label for="username">Enter Gmail Username:</label>
-      <input type="text" id="username" placeholder="example">
-      <p>@gmail.com</p>
+      <input type="text" id="username" class="email-input" placeholder="example">
       <button id="generate-btn" disabled>Generate Variations</button>
       <button id="copy-btn" disabled>Copy Variations</button>
       <button id="download-btn" disabled>Download Variations</button>
@@ -112,7 +142,6 @@
   </footer>
 
   <script>
-    // Access Codes
     const masterAccessCode = 2025;
     const validAccessCodes = [
       264431, 936066, 613903, 234711, 737793, 162538, 140038, 199699, 879582,
@@ -123,12 +152,10 @@
       998905, 164773, 694171, 167944, 702335, 430903, 236761, 952638, 430053
     ];
 
-    // State Variables
     let usedOneTimeCodes = [];
     let maxVariations = 0;
     let generatedVariations = [];
 
-    // DOM Elements
     const accessBtn = document.getElementById("access-btn");
     const generateBtn = document.getElementById("generate-btn");
     const copyBtn = document.getElementById("copy-btn");
@@ -138,13 +165,11 @@
     const spinner = document.getElementById("loading-screen");
     const generatorSection = document.getElementById("generator-section");
 
-    // Event Listeners
     accessBtn.addEventListener("click", validateAccessCode);
     generateBtn.addEventListener("click", generateVariations);
     copyBtn.addEventListener("click", copyToClipboard);
     downloadBtn.addEventListener("click", downloadVariations);
 
-    // Helper Functions
     function showLoading(show) {
       spinner.style.display = show ? "block" : "none";
     }
@@ -160,7 +185,7 @@
           enableGenerator("Access granted. Up to 100 variations allowed.", 100);
         } else if (oneTimeAccessCodes.includes(accessCode) && !usedOneTimeCodes.includes(accessCode)) {
           enableGenerator("Access granted. Up to 30 variations allowed (one-time).", 30);
-          usedOneTimeCodes.push(accessCode); // Mark code as used
+          usedOneTimeCodes.push(accessCode);
         } else if (usedOneTimeCodes.includes(accessCode)) {
           alert("This access code has already been used.");
         } else {
