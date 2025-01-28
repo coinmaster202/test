@@ -6,112 +6,119 @@
   <title>One Two Gmail Generator</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f7f9fb;
+      background-color: #f0f4f8;
+      color: #333;
     }
+
     header {
-      background-color: #008080;
+      background: linear-gradient(to right, #00796b, #004d40);
       color: white;
-      padding: 30px 20px;
       text-align: center;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      padding: 30px 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
+
     header h1 {
       font-size: 2.5rem;
       margin: 0;
+      animation: fadeIn 1.2s ease;
     }
+
     main {
-      padding: 20px;
-      max-width: 800px;
+      max-width: 900px;
       margin: 30px auto;
-      background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      animation: slideUp 0.8s ease;
     }
+
     section {
       margin-bottom: 30px;
     }
+
     label {
       display: block;
-      margin-bottom: 10px;
       font-weight: bold;
+      margin-bottom: 8px;
     }
-    input {
-      padding: 10px;
+
+    input, textarea, button {
+      font-family: inherit;
       font-size: 16px;
-      margin-bottom: 20px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
       width: 100%;
-      border-radius: 5px;
-      border: 1px solid #ddd;
+      margin-bottom: 20px;
       box-sizing: border-box;
-      position: relative;
     }
-    input::after {
-      content: "@gmail.com";
-      font-size: 0.9em;
-      color: #aaa;
-      position: absolute;
-      right: 10px;
-      top: calc(50% - 12px);
+
+    input:focus, textarea:focus {
+      border-color: #00796b;
+      outline: none;
+      box-shadow: 0 0 5px rgba(0, 121, 107, 0.4);
     }
-    input.email-input {
-      padding-right: 100px;
-      position: relative;
-    }
-    input.email-input::placeholder {
-      color: transparent;
-    }
-    input.email-input:focus::placeholder {
-      color: #ddd;
-    }
+
     button {
-      cursor: pointer;
-      padding: 10px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      width: 100%;
-      background-color: #008080;
+      background: #00796b;
       color: white;
-      margin-bottom: 20px;
-      transition: background-color 0.3s ease;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.1s ease;
     }
+
     button:hover {
-      background-color: #006666;
+      background: #004d40;
+      transform: translateY(-2px);
     }
-    button[disabled] {
-      background-color: #b0c4c4;
+
+    button:disabled {
+      background: #ccc;
       cursor: not-allowed;
     }
+
     .spinner {
       display: none;
       margin: 20px auto;
-      border: 4px solid #ddd;
-      border-top: 4px solid #008080;
+      border: 5px solid #ccc;
+      border-top: 5px solid #00796b;
       border-radius: 50%;
       width: 40px;
       height: 40px;
       animation: spin 1s linear infinite;
     }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    .output {
-      margin-top: 20px;
-      padding: 10px;
-      border: 1px solid #ddd;
-      background-color: #fff;
-      border-radius: 5px;
-    }
+
     footer {
       text-align: center;
       margin-top: 30px;
       padding: 20px;
-      background-color: #f1f1f1;
-      color: #555;
+      background: #004d40;
+      color: white;
+    }
+
+    footer p {
+      margin: 0;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -120,21 +127,31 @@
     <h1>One Two Gmail Generator</h1>
   </header>
   <main>
+    <!-- Access Code Section -->
     <section>
       <label for="access-code">Enter Access Code:</label>
       <input type="password" id="access-code" placeholder="Enter your access code">
       <button id="access-btn">Submit Access Code</button>
     </section>
 
+    <!-- Gmail Generator Section -->
     <section id="generator-section" style="display: none;">
       <label for="username">Enter Gmail Username:</label>
-      <input type="text" id="username" class="email-input" placeholder="example">
-      <button id="generate-btn" disabled>Generate Variations</button>
-      <button id="copy-btn" disabled>Copy Variations</button>
-      <button id="download-btn" disabled>Download Variations</button>
-      <div id="result" class="output" aria-live="polite"></div>
+      <input type="text" id="username" placeholder="example" autocomplete="off">
+      <p style="margin: -10px 0 20px; color: #777;">@gmail.com is automatically appended.</p>
+      <button id="generate-btn" disabled>Generate Gmail Variations</button>
+      <button id="copy-btn" disabled>Copy All Variations</button>
+      <div id="result" class="output"></div>
     </section>
 
+    <!-- Google Sheets Converter Section -->
+    <section id="email-converter-section" style="display: none;">
+      <h2>Convert Emails to Google Sheets</h2>
+      <textarea id="emailInput" placeholder="Generated emails will appear here..."></textarea>
+      <button id="download-csv-btn" disabled>Download as CSV</button>
+    </section>
+
+    <!-- Loading Spinner -->
     <div id="loading-screen" class="spinner"></div>
   </main>
   <footer>
@@ -142,6 +159,7 @@
   </footer>
 
   <script>
+    // All Access Codes
     const masterAccessCode = 2025;
     const validAccessCodes = [
       264431, 936066, 613903, 234711, 737793, 162538, 140038, 199699, 879582,
@@ -151,58 +169,55 @@
       872668, 194629, 779934, 693988, 523732, 267112, 215859, 797208, 490208,
       998905, 164773, 694171, 167944, 702335, 430903, 236761, 952638, 430053
     ];
-
     let usedOneTimeCodes = [];
     let maxVariations = 0;
     let generatedVariations = [];
 
+    // DOM Elements
     const accessBtn = document.getElementById("access-btn");
     const generateBtn = document.getElementById("generate-btn");
     const copyBtn = document.getElementById("copy-btn");
-    const downloadBtn = document.getElementById("download-btn");
-    const resultDiv = document.getElementById("result");
+    const downloadCsvBtn = document.getElementById("download-csv-btn");
     const usernameInput = document.getElementById("username");
+    const emailInput = document.getElementById("emailInput");
+    const resultDiv = document.getElementById("result");
     const spinner = document.getElementById("loading-screen");
     const generatorSection = document.getElementById("generator-section");
+    const emailConverterSection = document.getElementById("email-converter-section");
 
-    accessBtn.addEventListener("click", validateAccessCode);
-    generateBtn.addEventListener("click", generateVariations);
-    copyBtn.addEventListener("click", copyToClipboard);
-    downloadBtn.addEventListener("click", downloadVariations);
-
-    function showLoading(show) {
-      spinner.style.display = show ? "block" : "none";
-    }
-
-    function validateAccessCode() {
+    // Access Code Validation
+    accessBtn.addEventListener("click", () => {
       const accessCode = Number(document.getElementById("access-code").value.trim());
-      showLoading(true);
+      showSpinner(true);
 
       setTimeout(() => {
         if (accessCode === masterAccessCode) {
-          enableGenerator("Master access granted. Unlimited variations.", Infinity);
+          grantAccess("Master access granted. Unlimited variations available.", Infinity);
         } else if (validAccessCodes.includes(accessCode)) {
-          enableGenerator("Access granted. Up to 100 variations allowed.", 100);
+          grantAccess("Access granted. You can generate up to 100 variations.", 100);
         } else if (oneTimeAccessCodes.includes(accessCode) && !usedOneTimeCodes.includes(accessCode)) {
-          enableGenerator("Access granted. Up to 30 variations allowed (one-time).", 30);
-          usedOneTimeCodes.push(accessCode);
+          grantAccess("Access granted. You can generate up to 30 variations (one-time).", 30);
+          usedOneTimeCodes.push(accessCode); // Mark as used
         } else if (usedOneTimeCodes.includes(accessCode)) {
-          alert("This access code has already been used.");
+          alert("This one-time access code has already been used.");
         } else {
           alert("Invalid access code. Please try again.");
         }
-        showLoading(false);
+        showSpinner(false);
       }, 1000);
-    }
+    });
 
-    function enableGenerator(message, variationLimit) {
+    function grantAccess(message, limit) {
       alert(message);
-      maxVariations = variationLimit;
+      maxVariations = limit;
       generatorSection.style.display = "block";
+      emailConverterSection.style.display = "block";
       generateBtn.disabled = false;
+      downloadCsvBtn.disabled = false;
     }
 
-    function generateVariations() {
+    // Generate Gmail Variations
+    generateBtn.addEventListener("click", () => {
       const username = usernameInput.value.trim();
       if (!username) {
         alert("Please enter a valid Gmail username.");
@@ -210,23 +225,23 @@
       }
 
       const email = `${username}@gmail.com`;
-      showLoading(true);
+      showSpinner(true);
 
       setTimeout(() => {
-        generatedVariations = getDotVariations(username).slice(0, maxVariations);
-        resultDiv.innerHTML = `<p><strong>${generatedVariations.length}</strong> variations generated for: <strong>${email}</strong></p>`;
-        resultDiv.innerHTML += `<ul>${generatedVariations.map(variation => `<li>${variation}</li>`).join("")}</ul>`;
+        generatedVariations = generateDotVariations(username).slice(0, maxVariations);
+        resultDiv.innerHTML = `<p>${generatedVariations.length} variations generated for <strong>${email}</strong>:</p>`;
+        resultDiv.innerHTML += `<ul>${generatedVariations.map(v => `<li>${v}</li>`).join("")}</ul>`;
         copyBtn.disabled = false;
-        downloadBtn.disabled = false;
-        showLoading(false);
+        emailInput.value = generatedVariations.join("\n");
+        showSpinner(false);
       }, 1500);
-    }
+    });
 
-    function getDotVariations(username) {
+    // Generate Dot Variations
+    function generateDotVariations(username) {
       const variations = [];
-      const maxCombinations = 1 << (username.length - 1);
-
-      for (let i = 0; i < maxCombinations; i++) {
+      const combinations = 1 << (username.length - 1);
+      for (let i = 0; i < combinations; i++) {
         let variation = username[0];
         for (let j = 0; j < username.length - 1; j++) {
           if (i & (1 << j)) variation += ".";
@@ -237,19 +252,29 @@
       return variations;
     }
 
-    function copyToClipboard() {
-      navigator.clipboard.writeText(generatedVariations.join("\n"))
-        .then(() => alert("Variations copied to clipboard!"))
-        .catch(() => alert("Failed to copy variations."));
-    }
+    // Copy to Clipboard
+    copyBtn.addEventListener("click", () => {
+      navigator.clipboard.writeText(generatedVariations.join("\n")).then(() => {
+        alert("Variations copied to clipboard!");
+      }).catch(() => {
+        alert("Failed to copy variations.");
+      });
+    });
 
-    function downloadVariations() {
-      const content = generatedVariations.join("\n");
-      const blob = new Blob([content], { type: "text/plain" });
+    // Download Emails as CSV
+    downloadCsvBtn.addEventListener("click", () => {
+      const emails = emailInput.value.split(/\s+/).filter(email => email.includes("@"));
+      const csvContent = "Email\n" + emails.join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv" });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = "gmail_variations.txt";
+      link.download = "emails.csv";
       link.click();
+    });
+
+    // Show/Hide Spinner
+    function showSpinner(show) {
+      spinner.style.display = show ? "block" : "none";
     }
   </script>
 </body>
