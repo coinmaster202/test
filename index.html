@@ -15,15 +15,6 @@
       --background-color: #f5f7fa;
     }
 
-    [data-theme="dark"] {
-      --primary-color: #1e1e1e;
-      --secondary-color: #121212;
-      --button-bg: #333;
-      --button-hover: #555;
-      --text-color: #ddd;
-      --background-color: #181818;
-    }
-
     [data-theme="gold"] {
       --primary-color: #FFD700;
       --secondary-color: #FFA500;
@@ -31,24 +22,6 @@
       --button-hover: #FFA500;
       --text-color: #000;
       --background-color: #fff8dc;
-    }
-
-    [data-theme="blue"] {
-      --primary-color: #0073e6;
-      --secondary-color: #005bb5;
-      --button-bg: #0073e6;
-      --button-hover: #005bb5;
-      --text-color: #fff;
-      --background-color: #e6f2ff;
-    }
-
-    [data-theme="purple"] {
-      --primary-color: #6a0dad;
-      --secondary-color: #4b0082;
-      --button-bg: #6a0dad;
-      --button-hover: #4b0082;
-      --text-color: #fff;
-      --background-color: #f4e1ff;
     }
 
     body {
@@ -82,7 +55,7 @@
       font-weight: bold;
     }
 
-    select, input, button {
+    input, button {
       font-size: 16px;
       padding: 10px;
       border-radius: 8px;
@@ -92,7 +65,7 @@
       box-sizing: border-box;
     }
 
-    input:focus, select:focus {
+    input:focus {
       border-color: var(--primary-color);
       outline: none;
       box-shadow: 0 0 5px rgba(0, 121, 107, 0.4);
@@ -111,6 +84,11 @@
       transform: translateY(-2px);
     }
 
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
     footer {
       text-align: center;
       margin-top: 30px;
@@ -126,26 +104,15 @@
   </header>
 
   <main>
-    <div class="language-dropdown">
-      <label>🌍 Select Language:</label>
-      <div id="google_translate_element"></div>
-    </div>
-
-    <div>
-      <label>🎨 Select Theme:</label>
-      <select id="theme-select">
-        <option value="default">Green (Default)</option>
-        <option value="gold">Gold (Master Code)</option>
-        <option value="blue">Blue</option>
-        <option value="purple">Purple</option>
-        <option value="dark">Dark Mode</option>
-      </select>
-    </div>
-
     <section>
       <label for="access-code">Enter Access Code:</label>
       <input type="password" id="access-code" placeholder="Enter your access code">
       <button id="access-btn">Submit Access Code</button>
+    </section>
+
+    <section id="generator-section" style="display: none;">
+      <h2>Email Generator Unlocked</h2>
+      <p>You can now generate Gmail variations!</p>
     </section>
   </main>
 
@@ -158,45 +125,35 @@
       new google.translate.TranslateElement({ pageLanguage: 'en' }, 'google_translate_element');
     }
 
-    const hashedCodes = {
-      master: "2025",
-      valid: Array.from({ length: 100 }, (_, i) => (264431 + i).toString()),
-      oneTime: Array.from({ length: 100 }, (_, i) => (872668 + i).toString())
-    };
-
+    const masterCode = "2025";
+    const validCodes = Array.from({ length: 100 }, (_, i) => (264431 + i).toString());
+    const oneTimeCodes = Array.from({ length: 100 }, (_, i) => (872668 + i).toString());
     let usedOneTimeCodes = JSON.parse(localStorage.getItem("usedCodes")) || [];
 
-    document.getElementById("theme-select").addEventListener("change", function() {
-      const theme = this.value;
-      document.body.setAttribute("data-theme", theme);
-      localStorage.setItem("theme", theme);
-    });
-
-    document.addEventListener("DOMContentLoaded", function() {
-      const savedTheme = localStorage.getItem("theme") || "default";
-      document.body.setAttribute("data-theme", savedTheme);
-      document.getElementById("theme-select").value = savedTheme;
-    });
-
     document.getElementById("access-btn").addEventListener("click", function() {
-      const accessCode = document.getElementById("access-code").value.trim();
+      const enteredCode = document.getElementById("access-code").value.trim();
 
-      if (accessCode === hashedCodes.master) {
+      if (enteredCode === masterCode) {
         document.body.setAttribute("data-theme", "gold");
         localStorage.setItem("theme", "gold");
-        alert("Master Access Granted! Unlimited features unlocked.");
-      } else if (hashedCodes.valid.includes(accessCode)) {
-        alert("Access Granted! You can generate up to 100 variations.");
-      } else if (hashedCodes.oneTime.includes(accessCode) && !usedOneTimeCodes.includes(accessCode)) {
-        usedOneTimeCodes.push(accessCode);
+        unlockFeatures("Master Access Granted! Unlimited features unlocked.");
+      } else if (validCodes.includes(enteredCode)) {
+        unlockFeatures("Access Granted! You can generate up to 100 variations.");
+      } else if (oneTimeCodes.includes(enteredCode) && !usedOneTimeCodes.includes(enteredCode)) {
+        usedOneTimeCodes.push(enteredCode);
         localStorage.setItem("usedCodes", JSON.stringify(usedOneTimeCodes));
-        alert("One-Time Access Granted! You can generate up to 30 variations.");
-      } else if (usedOneTimeCodes.includes(accessCode)) {
+        unlockFeatures("One-Time Access Granted! You can generate up to 30 variations.");
+      } else if (usedOneTimeCodes.includes(enteredCode)) {
         alert("This one-time access code has already been used.");
       } else {
         alert("Invalid Access Code.");
       }
     });
+
+    function unlockFeatures(message) {
+      alert(message);
+      document.getElementById("generator-section").style.display = "block";
+    }
   </script>
 </body>
 </html>
