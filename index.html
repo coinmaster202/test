@@ -12,6 +12,7 @@
       padding: 0;
       background-color: #f5f7fa;
       color: #333;
+      transition: background 0.5s ease;
     }
 
     header {
@@ -25,6 +26,7 @@
 
     header.master {
       background: linear-gradient(to right, #FFD700, #FFA500);
+      color: black;
     }
 
     main {
@@ -111,20 +113,17 @@
   </header>
 
   <main>
-    <!-- Language Selection -->
     <div class="language-dropdown">
       <label>🌍 Select Language:</label>
       <div id="google_translate_element"></div>
     </div>
 
-    <!-- Access Code Section -->
     <section>
       <label for="access-code">Enter Access Code:</label>
       <input type="password" id="access-code" placeholder="Enter your access code">
       <button id="access-btn">Submit Access Code</button>
     </section>
 
-    <!-- Gmail Generator Section -->
     <section id="generator-section" style="display: none;">
       <label for="username">Enter Gmail Username:</label>
       <input type="text" id="username" placeholder="example" autocomplete="off">
@@ -134,7 +133,6 @@
       <div id="result" class="output"></div>
     </section>
 
-    <!-- Google Sheets Export (Only for Master Code) -->
     <section id="email-converter-section" style="display: none;">
       <h2>Convert Emails to Google Sheets</h2>
       <textarea id="emailInput" placeholder="Generated emails will appear here..."></textarea>
@@ -148,15 +146,8 @@
 
   <script>
     const masterAccessCode = 2025;
-    const validAccessCodes = [
-      264431, 936066, 613903, 234711, 737793, 162538, 140038, 199699, 879582,
-      688226, 451731, 959448, 741403, 135777, 866920, 426496, 662141, 144720,
-      739122, 890550, 532459, 409891, 644191, 998019, 983131, 120398
-    ];
-    const oneTimeAccessCodes = [
-      872668, 194629, 779934, 693988, 523732, 267112, 215859, 797208, 490208,
-      998905, 164773, 694171, 167944, 702335, 430903, 236761, 952638, 430053
-    ];
+    const validAccessCodes = Array.from({ length: 100 }, (_, i) => 264431 + i);
+    const oneTimeAccessCodes = Array.from({ length: 100 }, (_, i) => 872668 + i);
     let usedOneTimeCodes = [];
     let maxVariations = 0;
 
@@ -189,10 +180,39 @@
       if (isMaster) {
         document.getElementById("email-converter-section").style.display = "block";
         document.getElementById("page-header").classList.add("master");
+        document.body.style.backgroundColor = "#FFD700";
       } else {
         document.getElementById("email-converter-section").style.display = "none";
         document.getElementById("page-header").classList.remove("master");
+        document.body.style.backgroundColor = "#f5f7fa";
       }
+    }
+
+    document.getElementById("generate-btn").addEventListener("click", function() {
+      const username = document.getElementById("username").value.trim();
+      if (!username) {
+        alert("Please enter a valid Gmail username.");
+        return;
+      }
+
+      const email = `${username}@gmail.com`;
+      const variations = generateDotVariations(username).slice(0, maxVariations);
+      document.getElementById("result").innerHTML = `<p>${variations.length} variations generated:</p>` + variations.map(v => `<li>${v}</li>`).join("");
+      document.getElementById("emailInput").value = variations.join("\n");
+    });
+
+    function generateDotVariations(username) {
+      const variations = [];
+      const combinations = 1 << (username.length - 1);
+      for (let i = 0; i < combinations; i++) {
+        let variation = username[0];
+        for (let j = 0; j < username.length - 1; j++) {
+          if (i & (1 << j)) variation += ".";
+          variation += username[j + 1];
+        }
+        variations.push(`${variation}@gmail.com`);
+      }
+      return variations;
     }
   </script>
 </body>
