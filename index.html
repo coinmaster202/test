@@ -3,43 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>One Two Gmail Generator</title>
+  <title>AI-Verified Gmail Generator</title>
   <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
   <style>
-    :root {
-      --primary-color: #00796b;
-      --secondary-color: #004d40;
-      --button-bg: #00796b;
-      --button-hover: #004d40;
-      --text-color: #333;
-      --background-color: #f5f7fa;
-    }
-
-    [data-theme="gold"] {
-      --primary-color: #FFD700;
-      --secondary-color: #FFA500;
-      --button-bg: #FFD700;
-      --button-hover: #FFA500;
-      --text-color: #000;
-      --background-color: #fff8dc;
-    }
-
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
-      background-color: var(--background-color);
-      color: var(--text-color);
-      transition: background 0.5s ease, color 0.5s ease;
+      background-color: #f5f7fa;
+      color: #333;
     }
 
     header {
-      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      background: linear-gradient(to right, #00796b, #004d40);
       color: white;
       text-align: center;
       padding: 30px 20px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      transition: background 0.5s ease;
     }
 
     main {
@@ -55,7 +35,7 @@
       font-weight: bold;
     }
 
-    input, button {
+    select, input, button, textarea {
       font-size: 16px;
       padding: 10px;
       border-radius: 8px;
@@ -65,14 +45,8 @@
       box-sizing: border-box;
     }
 
-    input:focus {
-      border-color: var(--primary-color);
-      outline: none;
-      box-shadow: 0 0 5px rgba(0, 121, 107, 0.4);
-    }
-
     button {
-      background: var(--button-bg);
+      background: #00796b;
       color: white;
       border: none;
       cursor: pointer;
@@ -80,27 +54,22 @@
     }
 
     button:hover {
-      background: var(--button-hover);
+      background: #004d40;
       transform: translateY(-2px);
-    }
-
-    button:disabled {
-      background: #ccc;
-      cursor: not-allowed;
     }
 
     footer {
       text-align: center;
       margin-top: 30px;
       padding: 20px;
-      background: var(--secondary-color);
+      background: #004d40;
       color: white;
     }
   </style>
 </head>
-<body data-theme="default">
-  <header id="page-header">
-    <h1>One Two Gmail Generator</h1>
+<body>
+  <header>
+    <h1>AI-Verified Gmail Generator</h1>
   </header>
 
   <main>
@@ -111,13 +80,17 @@
     </section>
 
     <section id="generator-section" style="display: none;">
-      <h2>Email Generator Unlocked</h2>
-      <p>You can now generate Gmail variations!</p>
+      <label for="usernames">Enter Gmail Usernames (comma-separated):</label>
+      <input type="text" id="usernames" placeholder="example1, example2">
+      <p>@gmail.com is automatically appended.</p>
+      <button id="generate-btn">Generate Gmail Variations</button>
+      <button id="export-sheet-btn">Export to Google Sheets</button>
+      <div id="result"></div>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2025 One Two Gmail Generator</p>
+    <p>&copy; 2025 AI Gmail Generator</p>
   </footer>
 
   <script>
@@ -126,34 +99,88 @@
     }
 
     const masterCode = "2025";
-    const validCodes = Array.from({ length: 100 }, (_, i) => (264431 + i).toString());
-    const oneTimeCodes = Array.from({ length: 100 }, (_, i) => (872668 + i).toString());
-    let usedOneTimeCodes = JSON.parse(localStorage.getItem("usedCodes")) || [];
+    const validCodes = [...Array(100)].map((_, i) => (264431 + i).toString());
+    const oneTimeCodes = [...Array(100)].map((_, i) => (872668 + i).toString());
 
     document.getElementById("access-btn").addEventListener("click", function() {
       const enteredCode = document.getElementById("access-code").value.trim();
 
       if (enteredCode === masterCode) {
-        document.body.setAttribute("data-theme", "gold");
-        localStorage.setItem("theme", "gold");
-        unlockFeatures("Master Access Granted! Unlimited features unlocked.");
-      } else if (validCodes.includes(enteredCode)) {
-        unlockFeatures("Access Granted! You can generate up to 100 variations.");
-      } else if (oneTimeCodes.includes(enteredCode) && !usedOneTimeCodes.includes(enteredCode)) {
-        usedOneTimeCodes.push(enteredCode);
-        localStorage.setItem("usedCodes", JSON.stringify(usedOneTimeCodes));
-        unlockFeatures("One-Time Access Granted! You can generate up to 30 variations.");
-      } else if (usedOneTimeCodes.includes(enteredCode)) {
-        alert("This one-time access code has already been used.");
+        document.getElementById("generator-section").style.display = "block";
+        alert("Master Access Granted! Unlimited features unlocked.");
+      } else if (validCodes.includes(enteredCode) || oneTimeCodes.includes(enteredCode)) {
+        document.getElementById("generator-section").style.display = "block";
+        alert("Access Granted! You can generate email variations.");
       } else {
         alert("Invalid Access Code.");
       }
     });
 
-    function unlockFeatures(message) {
-      alert(message);
-      document.getElementById("generator-section").style.display = "block";
+    document.getElementById("generate-btn").addEventListener("click", function() {
+      const usernames = document.getElementById("usernames").value.split(",").map(u => u.trim());
+      if (usernames.length === 0 || usernames[0] === "") {
+        alert("Please enter at least one username.");
+        return;
+      }
+
+      let allVariations = [];
+      usernames.forEach(username => {
+        let variations = generateDotVariations(username);
+        let validVariations = variations.filter(isValidEmail);
+        allVariations.push(...validVariations);
+      });
+
+      document.getElementById("result").innerHTML = `<p>${allVariations.length} verified variations generated:</p>` +
+        allVariations.map(v => `<li>${v}</li>`).join("");
+
+      localStorage.setItem("verifiedEmails", allVariations.join("\n"));
+    });
+
+    function generateDotVariations(username) {
+      let variations = [];
+      const len = username.length;
+      const max = 1 << (len - 1);
+
+      for (let i = 0; i < max; i++) {
+        let variation = username[0];
+        for (let j = 0; j < len - 1; j++) {
+          if (i & (1 << j)) variation += ".";
+          variation += username[j + 1];
+        }
+        variations.push(`${variation}@gmail.com`);
+      }
+      return variations;
     }
+
+    function isValidEmail(email) {
+      const [localPart] = email.split("@");
+
+      if (localPart.includes("..")) return false; // Gmail does not allow consecutive dots.
+      if (localPart.startsWith(".") || localPart.endsWith(".")) return false; // Cannot start or end with a dot.
+      if (localPart.length < 3 || localPart.length > 30) return false; // Too short or too long.
+
+      return true; // Otherwise, assume it's valid.
+    }
+
+    document.getElementById("export-sheet-btn").addEventListener("click", function() {
+      const emails = localStorage.getItem("verifiedEmails") || "";
+      if (!emails) {
+        alert("No verified emails to export.");
+        return;
+      }
+
+      const blob = new Blob([emails], { type: "text/csv" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "verified_emails.csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
+    console.log("Master Code:", masterCode);
+    console.log("Valid Codes:", validCodes);
+    console.log("One-Time Codes:", oneTimeCodes);
   </script>
 </body>
 </html>
