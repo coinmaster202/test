@@ -6,7 +6,6 @@
   <title>One Two Gmail Generator</title>
   <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
   <style>
-    /* General Styles */
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
@@ -23,10 +22,6 @@
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-    header.master {
-      background: linear-gradient(to right, #FFD700, #FFA500);
-    }
-
     main {
       max-width: 900px;
       margin: 30px auto;
@@ -36,27 +31,15 @@
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     }
 
-    /* Mobile-Friendly Design */
     @media (max-width: 600px) {
-      main {
-        width: 90%;
-        padding: 15px;
-      }
-
-      button {
-        font-size: 14px;
-      }
-
-      input, textarea {
-        font-size: 14px;
-      }
+      main { width: 90%; padding: 15px; }
+      button { font-size: 14px; }
+      input { font-size: 14px; }
     }
 
-    label {
-      font-weight: bold;
-    }
+    label { font-weight: bold; }
 
-    input, button, textarea {
+    input, button, select {
       font-size: 16px;
       padding: 10px;
       border-radius: 8px;
@@ -79,18 +62,36 @@
       transform: translateY(-2px);
     }
 
-    button.master {
-      background: #FFD700;
-      color: black;
+    .dropdown {
+      position: relative;
+      display: inline-block;
+      width: 100%;
     }
 
-    button.master:hover {
-      background: #FFA500;
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      width: 100%;
+      background: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 1;
     }
 
-    button:disabled {
-      background: #ccc;
-      cursor: not-allowed;
+    .dropdown-content button {
+      width: 100%;
+      background: #00796b;
+      color: white;
+      border: none;
+      padding: 10px;
+      text-align: left;
+    }
+
+    .dropdown-content button:hover {
+      background: #004d40;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
     }
 
     footer {
@@ -103,7 +104,7 @@
   </style>
 </head>
 <body>
-  <header id="page-header">
+  <header>
     <h1>One Two Gmail Generator</h1>
   </header>
 
@@ -120,13 +121,16 @@
       <p>@gmail.com is automatically appended.</p>
       <button id="generate-btn">Generate Gmail Variations</button>
       <button id="copy-btn">Copy All Variations</button>
-      <div id="result" class="output"></div>
-    </section>
 
-    <section id="email-converter-section" style="display: none;">
-      <h2>Convert Emails to Google Sheets</h2>
-      <textarea id="emailInput" placeholder="Generated emails will appear here..."></textarea>
-      <button id="download-csv-btn" class="master">Download as CSV</button>
+      <div class="dropdown">
+        <button id="download-btn">Download ▼</button>
+        <div class="dropdown-content">
+          <button onclick="downloadFile('txt')">Download as TXT</button>
+          <button onclick="downloadFile('csv')">Download as CSV</button>
+        </div>
+      </div>
+
+      <div id="result"></div>
     </section>
   </main>
 
@@ -145,32 +149,27 @@
       const accessCode = Number(document.getElementById("access-code").value.trim());
 
       if (accessCode === masterAccessCode) {
-        grantAccess("Master access granted. Unlimited variations available.", Infinity, true);
+        grantAccess("Master access granted. Unlimited variations available.", Infinity);
       } else if (validAccessCodes.includes(accessCode)) {
-        grantAccess("Access granted. You can generate up to 100 variations.", 100, false);
+        grantAccess("Access granted. You can generate up to 100 variations.", 100);
       } else if (oneTimeAccessCodes.includes(accessCode) && !usedOneTimeCodes.includes(accessCode)) {
-        grantAccess("Access granted. You can generate up to 30 variations (one-time).", 30, false);
+        grantAccess("Access granted. You can generate up to 30 variations (one-time).", 30);
         usedOneTimeCodes.push(accessCode);
       } else {
         alert("Invalid access code. Please try again.");
       }
     });
 
-    function grantAccess(message, limit, isMaster) {
+    function grantAccess(message, limit) {
       alert(message);
       maxVariations = limit;
       document.getElementById("generator-section").style.display = "block";
-
-      if (isMaster) {
-        document.getElementById("email-converter-section").style.display = "block";
-        document.getElementById("page-header").classList.add("master");
-      }
     }
 
     document.getElementById("generate-btn").addEventListener("click", function() {
       const username = document.getElementById("username").value.trim();
-      if (!username) {
-        alert("Please enter a valid Gmail username.");
+      if (!username || username.includes(" ")) {
+        alert("Please enter a valid Gmail username (no spaces).");
         return;
       }
 
@@ -178,11 +177,11 @@
       document.getElementById("result").innerHTML = `<p>${variations.length} variations generated:</p>` +
         `<ul>${variations.map(v => `<li>${v}</li>`).join("")}</ul>`;
 
-      document.getElementById("emailInput").value = variations.join("\n");
+      localStorage.setItem("generatedEmails", JSON.stringify(variations));
     });
 
     function generateDotVariations(username) {
-      let variations = [];
+      let variations = new Set();
       const len = username.length;
       const max = 1 << (len - 1);
 
@@ -192,22 +191,37 @@
           if (i & (1 << j)) variation += ".";
           variation += username[j + 1];
         }
-        variations.push(`${variation}@gmail.com`);
+        if (isValidVariation(variation)) {
+          variations.add(`${variation}@gmail.com`);
+        }
       }
-      return variations.slice(0, maxVariations);
+      return Array.from(variations).slice(0, maxVariations);
     }
 
-    document.getElementById("copy-btn").addEventListener("click", function() {
-      const emailList = document.getElementById("emailInput").value;
-      if (!emailList) {
-        alert("No emails to copy.");
+    function isValidVariation(variation) {
+      return !(variation.startsWith(".") || variation.endsWith(".") || variation.includes(".."));
+    }
+
+    function downloadFile(type) {
+      const emails = JSON.parse(localStorage.getItem("generatedEmails")) || [];
+      if (emails.length === 0) {
+        alert("No emails to download.");
         return;
       }
 
-      navigator.clipboard.writeText(emailList)
-        .then(() => alert("Emails copied to clipboard!"))
-        .catch(err => console.error("Failed to copy:", err));
-    });
+      let content = emails.join("\n");
+      let mimeType = type === "csv" ? "text/csv" : "text/plain";
+      let extension = type === "csv" ? "csv" : "txt";
+
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `gmail_variations.${extension}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
 
   </script>
 </body>
