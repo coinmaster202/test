@@ -6,6 +6,7 @@
   <title>One Two Gmail Generator</title>
   <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
   <style>
+    /* General Styles */
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
@@ -20,7 +21,6 @@
       text-align: center;
       padding: 30px 20px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      transition: background 0.5s ease;
     }
 
     header.master {
@@ -36,24 +36,34 @@
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     }
 
+    /* Mobile-Friendly Design */
+    @media (max-width: 600px) {
+      main {
+        width: 90%;
+        padding: 15px;
+      }
+
+      button {
+        font-size: 14px;
+      }
+
+      input, textarea {
+        font-size: 14px;
+      }
+    }
+
     label {
       font-weight: bold;
     }
 
-    select, input, textarea, button {
+    input, button, textarea {
       font-size: 16px;
       padding: 10px;
       border-radius: 8px;
       border: 1px solid #ccc;
       width: 100%;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       box-sizing: border-box;
-    }
-
-    input:focus, textarea:focus, select:focus {
-      border-color: #00796b;
-      outline: none;
-      box-shadow: 0 0 5px rgba(0, 121, 107, 0.4);
     }
 
     button {
@@ -61,7 +71,7 @@
       color: white;
       border: none;
       cursor: pointer;
-      transition: background 0.3s ease, transform 0.1s ease;
+      transition: background 0.3s, transform 0.1s;
     }
 
     button:hover {
@@ -90,19 +100,6 @@
       background: #004d40;
       color: white;
     }
-
-    .language-dropdown {
-      text-align: right;
-      margin-bottom: 20px;
-    }
-
-    #google_translate_element select {
-      padding: 8px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
-
   </style>
 </head>
 <body>
@@ -111,30 +108,21 @@
   </header>
 
   <main>
-    <!-- Language Selection -->
-    <div class="language-dropdown">
-      <label>🌍 Select Language:</label>
-      <div id="google_translate_element"></div>
-    </div>
-
-    <!-- Access Code Section -->
     <section>
       <label for="access-code">Enter Access Code:</label>
       <input type="password" id="access-code" placeholder="Enter your access code">
       <button id="access-btn">Submit Access Code</button>
     </section>
 
-    <!-- Gmail Generator Section -->
     <section id="generator-section" style="display: none;">
       <label for="username">Enter Gmail Username:</label>
       <input type="text" id="username" placeholder="example" autocomplete="off">
       <p>@gmail.com is automatically appended.</p>
-      <button id="generate-btn" disabled>Generate Gmail Variations</button>
-      <button id="copy-btn" disabled>Copy All Variations</button>
+      <button id="generate-btn">Generate Gmail Variations</button>
+      <button id="copy-btn">Copy All Variations</button>
       <div id="result" class="output"></div>
     </section>
 
-    <!-- Google Sheets Export (Only for Master Code) -->
     <section id="email-converter-section" style="display: none;">
       <h2>Convert Emails to Google Sheets</h2>
       <textarea id="emailInput" placeholder="Generated emails will appear here..."></textarea>
@@ -148,21 +136,10 @@
 
   <script>
     const masterAccessCode = 2025;
-    const validAccessCodes = [
-      264431, 936066, 613903, 234711, 737793, 162538, 140038, 199699, 879582,
-      688226, 451731, 959448, 741403, 135777, 866920, 426496, 662141, 144720,
-      739122, 890550, 532459, 409891, 644191, 998019, 983131, 120398
-    ];
-    const oneTimeAccessCodes = [
-      872668, 194629, 779934, 693988, 523732, 267112, 215859, 797208, 490208,
-      998905, 164773, 694171, 167944, 702335, 430903, 236761, 952638, 430053
-    ];
+    const validAccessCodes = Array.from({ length: 100 }, (_, i) => 264431 + i);
+    const oneTimeAccessCodes = Array.from({ length: 100 }, (_, i) => 872668 + i);
     let usedOneTimeCodes = [];
     let maxVariations = 0;
-
-    function googleTranslateElementInit() {
-      new google.translate.TranslateElement({ pageLanguage: 'en' }, 'google_translate_element');
-    }
 
     document.getElementById("access-btn").addEventListener("click", function() {
       const accessCode = Number(document.getElementById("access-code").value.trim());
@@ -183,17 +160,55 @@
       alert(message);
       maxVariations = limit;
       document.getElementById("generator-section").style.display = "block";
-      document.getElementById("generate-btn").disabled = false;
-      document.getElementById("copy-btn").disabled = false;
 
       if (isMaster) {
         document.getElementById("email-converter-section").style.display = "block";
         document.getElementById("page-header").classList.add("master");
-      } else {
-        document.getElementById("email-converter-section").style.display = "none";
-        document.getElementById("page-header").classList.remove("master");
       }
     }
+
+    document.getElementById("generate-btn").addEventListener("click", function() {
+      const username = document.getElementById("username").value.trim();
+      if (!username) {
+        alert("Please enter a valid Gmail username.");
+        return;
+      }
+
+      let variations = generateDotVariations(username);
+      document.getElementById("result").innerHTML = `<p>${variations.length} variations generated:</p>` +
+        `<ul>${variations.map(v => `<li>${v}</li>`).join("")}</ul>`;
+
+      document.getElementById("emailInput").value = variations.join("\n");
+    });
+
+    function generateDotVariations(username) {
+      let variations = [];
+      const len = username.length;
+      const max = 1 << (len - 1);
+
+      for (let i = 0; i < max; i++) {
+        let variation = username[0];
+        for (let j = 0; j < len - 1; j++) {
+          if (i & (1 << j)) variation += ".";
+          variation += username[j + 1];
+        }
+        variations.push(`${variation}@gmail.com`);
+      }
+      return variations.slice(0, maxVariations);
+    }
+
+    document.getElementById("copy-btn").addEventListener("click", function() {
+      const emailList = document.getElementById("emailInput").value;
+      if (!emailList) {
+        alert("No emails to copy.");
+        return;
+      }
+
+      navigator.clipboard.writeText(emailList)
+        .then(() => alert("Emails copied to clipboard!"))
+        .catch(err => console.error("Failed to copy:", err));
+    });
+
   </script>
 </body>
 </html>
