@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>One Two Gmail Generator</title>
   <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 0;
       background-color: #f5f7fa;
@@ -39,7 +40,7 @@
 
     label { font-weight: bold; }
 
-    input, button, select {
+    input, button, select, textarea {
       font-size: 16px;
       padding: 10px;
       border-radius: 8px;
@@ -132,6 +133,12 @@
 
       <div id="result"></div>
     </section>
+
+    <section id="email-converter-section" style="display: none;">
+      <h2>Convert Emails to Google Sheets</h2>
+      <textarea id="emailInput" placeholder="Generated emails will appear here..."></textarea>
+      <button id="export-sheet-btn">Export to Google Sheets</button>
+    </section>
   </main>
 
   <footer>
@@ -150,6 +157,7 @@
 
       if (accessCode === masterAccessCode) {
         grantAccess("Master access granted. Unlimited variations available.", Infinity);
+        document.getElementById("email-converter-section").style.display = "block";
       } else if (validAccessCodes.includes(accessCode)) {
         grantAccess("Access granted. You can generate up to 100 variations.", 100);
       } else if (oneTimeAccessCodes.includes(accessCode) && !usedOneTimeCodes.includes(accessCode)) {
@@ -164,42 +172,6 @@
       alert(message);
       maxVariations = limit;
       document.getElementById("generator-section").style.display = "block";
-    }
-
-    document.getElementById("generate-btn").addEventListener("click", function() {
-      const username = document.getElementById("username").value.trim();
-      if (!username || username.includes(" ")) {
-        alert("Please enter a valid Gmail username (no spaces).");
-        return;
-      }
-
-      let variations = generateDotVariations(username);
-      document.getElementById("result").innerHTML = `<p>${variations.length} variations generated:</p>` +
-        `<ul>${variations.map(v => `<li>${v}</li>`).join("")}</ul>`;
-
-      localStorage.setItem("generatedEmails", JSON.stringify(variations));
-    });
-
-    function generateDotVariations(username) {
-      let variations = new Set();
-      const len = username.length;
-      const max = 1 << (len - 1);
-
-      for (let i = 0; i < max; i++) {
-        let variation = username[0];
-        for (let j = 0; j < len - 1; j++) {
-          if (i & (1 << j)) variation += ".";
-          variation += username[j + 1];
-        }
-        if (isValidVariation(variation)) {
-          variations.add(`${variation}@gmail.com`);
-        }
-      }
-      return Array.from(variations).slice(0, maxVariations);
-    }
-
-    function isValidVariation(variation) {
-      return !(variation.startsWith(".") || variation.endsWith(".") || variation.includes(".."));
     }
 
     function downloadFile(type) {
@@ -222,6 +194,17 @@
       link.click();
       document.body.removeChild(link);
     }
+
+    document.getElementById("export-sheet-btn").addEventListener("click", function() {
+      const emails = JSON.parse(localStorage.getItem("generatedEmails")) || [];
+      if (emails.length === 0) {
+        alert("No emails to export.");
+        return;
+      }
+
+      alert("Exporting to Google Sheets (Placeholder - Connect API)");
+      // Google Sheets API integration can be added here.
+    });
 
   </script>
 </body>
