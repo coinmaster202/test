@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>One Two Gmail Generator</title>
   <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <script defer src="https://apis.google.com/js/api.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -57,6 +58,9 @@
       background: #004d40;
       color: white;
     }
+    #email-converter-section {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -79,6 +83,12 @@
       <button id="copy-btn">Copy All Variations</button>
       <div id="result"></div>
     </section>
+
+    <section id="email-converter-section">
+      <h2>Convert Emails to Google Sheets</h2>
+      <textarea id="emailInput" placeholder="Generated emails will appear here..."></textarea>
+      <button id="export-sheet-btn">Export to Google Sheets</button>
+    </section>
   </main>
 
   <footer>
@@ -87,43 +97,21 @@
 
   <script>
     const masterAccessCode = 2025;
-    const validAccessCodes = [
-      264431, 936066, 613903, 234711, 737793, 162538, 140038, 199699, 879582,
-      688226, 451731, 959448, 741403, 135777, 866920, 426496, 662141, 144720,
-      739122, 890550, 532459, 409891, 644191, 998019, 983131, 120398, 772648,
-      776418, 641075, 229289, 830015, 211789, 882463, 585385, 332421, 258162
-    ];
-    const oneTimeAccessCodes = [
-      872668, 194629, 779934, 693988, 523732, 267112, 215859, 797208, 490208,
-      998905, 164773, 694171, 167944, 702335, 430903, 236761, 952638, 430053
-    ];
-    const unlimitedAccessCodes = [
-      988651, 330569, 615077, 368927, 570875, 186463, 133397, 247692, 805230,
-      509834, 561786, 968817, 814289, 240978, 521609, 326455, 928562, 798061,
-      681619, 363333, 246296, 978211, 512814, 495416, 580016, 505273, 116138
-    ];
-    let usedOneTimeCodes = [];
-    let maxVariations = 0;
 
     document.getElementById("access-btn").addEventListener("click", function() {
       const accessCode = Number(document.getElementById("access-code").value.trim());
 
-      if (accessCode === masterAccessCode || unlimitedAccessCodes.includes(accessCode)) {
-        grantAccess("Unlimited access granted!", Infinity);
-      } else if (validAccessCodes.includes(accessCode)) {
-        grantAccess("Access granted. You can generate up to 100 variations.", 100);
-      } else if (oneTimeAccessCodes.includes(accessCode) && !usedOneTimeCodes.includes(accessCode)) {
-        grantAccess("Access granted. You can generate up to 30 variations (one-time).", 30);
-        usedOneTimeCodes.push(accessCode);
+      if (accessCode === masterAccessCode) {
+        grantMasterAccess();
       } else {
-        alert("Invalid access code. Please try again.");
+        alert("Invalid access code. Only the master code allows access.");
       }
     });
 
-    function grantAccess(message, limit) {
-      alert(message);
-      maxVariations = limit;
+    function grantMasterAccess() {
+      alert("Master access granted! Unlimited variations and Google Sheets export enabled.");
       document.getElementById("generator-section").style.display = "block";
+      document.getElementById("email-converter-section").style.display = "block";
     }
 
     document.getElementById("generate-btn").addEventListener("click", function() {
@@ -137,7 +125,7 @@
       document.getElementById("result").innerHTML = `<p>${variations.length} variations generated:</p>` +
         `<ul>${variations.map(v => `<li>${v}</li>`).join("")}</ul>`;
 
-      localStorage.setItem("generatedEmails", JSON.stringify(variations));
+      document.getElementById("emailInput").value = variations.join("\n");
     });
 
     function generateDotVariations(username) {
@@ -153,7 +141,49 @@
           variations.add(`${variation}@gmail.com`);
         }
       }
-      return Array.from(variations).slice(0, maxVariations);
+      return Array.from(variations);
+    }
+
+    document.getElementById("export-sheet-btn").addEventListener("click", function () {
+      const emails = document.getElementById("emailInput").value.split("\n").filter(e => e.trim() !== "");
+      if (emails.length === 0) {
+        alert("No emails to export.");
+        return;
+      }
+
+      const sheetName = prompt("Enter the Google Sheet name:", "Gmail Variations");
+      if (!sheetName) return;
+
+      exportToGoogleSheets(sheetName, emails);
+    });
+
+    function exportToGoogleSheets(sheetName, emails) {
+      gapi.load("client:auth2", () => {
+        gapi.client.init({
+          apiKey: "YOUR_API_KEY",
+          clientId: "YOUR_CLIENT_ID",
+          discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+          scope: "https://www.googleapis.com/auth/spreadsheets"
+        }).then(() => {
+          return gapi.auth2.getAuthInstance().signIn();
+        }).then(() => {
+          const spreadsheetId = "YOUR_SPREADSHEET_ID";
+          const range = sheetName + "!A:A";
+          const values = emails.map(email => [email]);
+
+          return gapi.client.sheets.spreadsheets.values.append({
+            spreadsheetId,
+            range,
+            valueInputOption: "RAW",
+            resource: { values }
+          });
+        }).then(response => {
+          alert(`Emails successfully added to Google Sheets!`);
+        }).catch(error => {
+          console.error("Error exporting to Google Sheets:", error);
+          alert("Failed to export emails to Google Sheets.");
+        });
+      });
     }
   </script>
 </body>
