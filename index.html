@@ -14,7 +14,6 @@
       background-color: #f5f7fa;
       color: #333;
     }
-
     header {
       background: linear-gradient(to right, #00796b, #004d40);
       color: white;
@@ -22,7 +21,6 @@
       padding: 30px 20px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-
     main {
       max-width: 900px;
       margin: 30px auto;
@@ -31,16 +29,8 @@
       border-radius: 12px;
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     }
-
-    @media (max-width: 600px) {
-      main { width: 90%; padding: 15px; }
-      button { font-size: 14px; }
-      input { font-size: 14px; }
-    }
-
     label { font-weight: bold; }
-
-    input, button, select, textarea {
+    input, button {
       font-size: 16px;
       padding: 10px;
       border-radius: 8px;
@@ -49,7 +39,6 @@
       margin-bottom: 15px;
       box-sizing: border-box;
     }
-
     button {
       background: #00796b;
       color: white;
@@ -57,44 +46,10 @@
       cursor: pointer;
       transition: background 0.3s, transform 0.1s;
     }
-
     button:hover {
       background: #004d40;
       transform: translateY(-2px);
     }
-
-    .dropdown {
-      position: relative;
-      display: inline-block;
-      width: 100%;
-    }
-
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      width: 100%;
-      background: white;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      z-index: 1;
-    }
-
-    .dropdown-content button {
-      width: 100%;
-      background: #00796b;
-      color: white;
-      border: none;
-      padding: 10px;
-      text-align: left;
-    }
-
-    .dropdown-content button:hover {
-      background: #004d40;
-    }
-
-    .dropdown:hover .dropdown-content {
-      display: block;
-    }
-
     footer {
       text-align: center;
       margin-top: 30px;
@@ -122,22 +77,7 @@
       <p>@gmail.com is automatically appended.</p>
       <button id="generate-btn">Generate Gmail Variations</button>
       <button id="copy-btn">Copy All Variations</button>
-
-      <div class="dropdown">
-        <button id="download-btn">Download ▼</button>
-        <div class="dropdown-content">
-          <button onclick="downloadFile('txt')">Download as TXT</button>
-          <button onclick="downloadFile('csv')">Download as CSV</button>
-        </div>
-      </div>
-
       <div id="result"></div>
-    </section>
-
-    <section id="email-converter-section" style="display: none;">
-      <h2>Convert Emails to Google Sheets</h2>
-      <textarea id="emailInput" placeholder="Generated emails will appear here..."></textarea>
-      <button id="export-sheet-btn">Export to Google Sheets</button>
     </section>
   </main>
 
@@ -147,17 +87,29 @@
 
   <script>
     const masterAccessCode = 2025;
-    const validAccessCodes = Array.from({ length: 100 }, (_, i) => 264431 + i);
-    const oneTimeAccessCodes = Array.from({ length: 100 }, (_, i) => 872668 + i);
+    const validAccessCodes = [
+      264431, 936066, 613903, 234711, 737793, 162538, 140038, 199699, 879582,
+      688226, 451731, 959448, 741403, 135777, 866920, 426496, 662141, 144720,
+      739122, 890550, 532459, 409891, 644191, 998019, 983131, 120398, 772648,
+      776418, 641075, 229289, 830015, 211789, 882463, 585385, 332421, 258162
+    ];
+    const oneTimeAccessCodes = [
+      872668, 194629, 779934, 693988, 523732, 267112, 215859, 797208, 490208,
+      998905, 164773, 694171, 167944, 702335, 430903, 236761, 952638, 430053
+    ];
+    const unlimitedAccessCodes = [
+      988651, 330569, 615077, 368927, 570875, 186463, 133397, 247692, 805230,
+      509834, 561786, 968817, 814289, 240978, 521609, 326455, 928562, 798061,
+      681619, 363333, 246296, 978211, 512814, 495416, 580016, 505273, 116138
+    ];
     let usedOneTimeCodes = [];
     let maxVariations = 0;
 
     document.getElementById("access-btn").addEventListener("click", function() {
       const accessCode = Number(document.getElementById("access-code").value.trim());
 
-      if (accessCode === masterAccessCode) {
-        grantAccess("Master access granted. Unlimited variations available.", Infinity);
-        document.getElementById("email-converter-section").style.display = "block";
+      if (accessCode === masterAccessCode || unlimitedAccessCodes.includes(accessCode)) {
+        grantAccess("Unlimited access granted!", Infinity);
       } else if (validAccessCodes.includes(accessCode)) {
         grantAccess("Access granted. You can generate up to 100 variations.", 100);
       } else if (oneTimeAccessCodes.includes(accessCode) && !usedOneTimeCodes.includes(accessCode)) {
@@ -174,38 +126,35 @@
       document.getElementById("generator-section").style.display = "block";
     }
 
-    function downloadFile(type) {
-      const emails = JSON.parse(localStorage.getItem("generatedEmails")) || [];
-      if (emails.length === 0) {
-        alert("No emails to download.");
+    document.getElementById("generate-btn").addEventListener("click", function() {
+      const username = document.getElementById("username").value.trim();
+      if (!username) {
+        alert("Please enter a valid Gmail username.");
         return;
       }
 
-      let content = emails.join("\n");
-      let mimeType = type === "csv" ? "text/csv" : "text/plain";
-      let extension = type === "csv" ? "csv" : "txt";
+      let variations = generateDotVariations(username);
+      document.getElementById("result").innerHTML = `<p>${variations.length} variations generated:</p>` +
+        `<ul>${variations.map(v => `<li>${v}</li>`).join("")}</ul>`;
 
-      const blob = new Blob([content], { type: mimeType });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `gmail_variations.${extension}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    document.getElementById("export-sheet-btn").addEventListener("click", function() {
-      const emails = JSON.parse(localStorage.getItem("generatedEmails")) || [];
-      if (emails.length === 0) {
-        alert("No emails to export.");
-        return;
-      }
-
-      alert("Exporting to Google Sheets (Placeholder - Connect API)");
-      // Google Sheets API integration can be added here.
+      localStorage.setItem("generatedEmails", JSON.stringify(variations));
     });
 
+    function generateDotVariations(username) {
+      let variations = new Set();
+      const len = username.length;
+      for (let i = 1; i < (1 << (len - 1)); i++) {
+        let variation = username[0];
+        for (let j = 0; j < len - 1; j++) {
+          if (i & (1 << j)) variation += ".";
+          variation += username[j + 1];
+        }
+        if (!variation.includes("..") && !variation.startsWith(".") && !variation.endsWith(".")) {
+          variations.add(`${variation}@gmail.com`);
+        }
+      }
+      return Array.from(variations).slice(0, maxVariations);
+    }
   </script>
 </body>
 </html>
