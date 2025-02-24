@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,7 +30,7 @@
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     }
     label { font-weight: bold; }
-    input, button {
+    input, button, select {
       font-size: 16px;
       padding: 10px;
       border-radius: 8px;
@@ -66,41 +65,34 @@
 <body>
   <header>
     <h1>One Two Gmail Generator</h1>
-  </header>
-
-  <main>
+  </header>  <main>
     <section>
       <label for="access-code">Enter Access Code:</label>
       <input type="password" id="access-code" placeholder="Enter your access code">
       <button id="access-btn">Submit Access Code</button>
-    </section>
+    </section><section id="generator-section" style="display: none;">
+  <label for="username">Enter Gmail Username:</label>
+  <input type="text" id="username" placeholder="example" autocomplete="off">
+  <p>@gmail.com is automatically added.</p>
+  <button id="generate-btn">Generate Gmail Variations</button>
+  <button id="copy-btn">Copy All Variations</button>
+  <div id="result"></div>
 
-    <section id="generator-section" style="display: none;">
-      <label for="username">Enter Gmail Username:</label>
-      <input type="text" id="username" placeholder="example" autocomplete="off">
-      <p>@gmail.com is automatically appended.</p>
-      <button id="generate-btn">Generate Gmail Variations</button>
-      <button id="copy-btn">Copy All Variations</button>
-      <div id="result"></div>
-    </section>
+  <label for="download-format">Download as:</label>
+  <select id="download-format">
+    <option value="txt">TXT</option>
+    <option value="csv">CSV</option>
+  </select>
+  <button id="download-btn">Download</button>
+</section>
 
-    <section id="email-converter-section">
-      <h2>Convert Emails to Google Sheets</h2>
-      <textarea id="emailInput" placeholder="Generated emails will appear here..."></textarea>
-      <button id="export-sheet-btn">Export to Google Sheets</button>
-    </section>
-  </main>
-
-  <footer>
+  </main>  <footer>
     <p>&copy; 2025 One Two Gmail Generator</p>
-  </footer>
-
-  <script>
+  </footer>  <script>
     const masterAccessCode = 2025;
 
     document.getElementById("access-btn").addEventListener("click", function() {
       const accessCode = Number(document.getElementById("access-code").value.trim());
-
       if (accessCode === masterAccessCode) {
         grantMasterAccess();
       } else {
@@ -109,9 +101,8 @@
     });
 
     function grantMasterAccess() {
-      alert("Master access granted! Unlimited variations and Google Sheets export enabled.");
+      alert("Master access granted! Unlimited variations enabled.");
       document.getElementById("generator-section").style.display = "block";
-      document.getElementById("email-converter-section").style.display = "block";
     }
 
     document.getElementById("generate-btn").addEventListener("click", function() {
@@ -124,8 +115,6 @@
       let variations = generateDotVariations(username);
       document.getElementById("result").innerHTML = `<p>${variations.length} variations generated:</p>` +
         `<ul>${variations.map(v => `<li>${v}</li>`).join("")}</ul>`;
-
-      document.getElementById("emailInput").value = variations.join("\n");
     });
 
     function generateDotVariations(username) {
@@ -144,47 +133,22 @@
       return Array.from(variations);
     }
 
-    document.getElementById("export-sheet-btn").addEventListener("click", function () {
-      const emails = document.getElementById("emailInput").value.split("\n").filter(e => e.trim() !== "");
+    document.getElementById("download-btn").addEventListener("click", function () {
+      const format = document.getElementById("download-format").value;
+      const emails = document.getElementById("result").innerText.split("\n").slice(1);
       if (emails.length === 0) {
-        alert("No emails to export.");
+        alert("No emails to download.");
         return;
       }
 
-      const sheetName = prompt("Enter the Google Sheet name:", "Gmail Variations");
-      if (!sheetName) return;
-
-      exportToGoogleSheets(sheetName, emails);
+      let content = format === "csv" ? emails.join(",\n") : emails.join("\n");
+      let blob = new Blob([content], { type: format === "csv" ? "text/csv" : "text/plain" });
+      let a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `gmail_variations.${format}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     });
-
-    function exportToGoogleSheets(sheetName, emails) {
-      gapi.load("client:auth2", () => {
-        gapi.client.init({
-          apiKey: "YOUR_API_KEY",
-          clientId: "YOUR_CLIENT_ID",
-          discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
-          scope: "https://www.googleapis.com/auth/spreadsheets"
-        }).then(() => {
-          return gapi.auth2.getAuthInstance().signIn();
-        }).then(() => {
-          const spreadsheetId = "YOUR_SPREADSHEET_ID";
-          const range = sheetName + "!A:A";
-          const values = emails.map(email => [email]);
-
-          return gapi.client.sheets.spreadsheets.values.append({
-            spreadsheetId,
-            range,
-            valueInputOption: "RAW",
-            resource: { values }
-          });
-        }).then(response => {
-          alert(`Emails successfully added to Google Sheets!`);
-        }).catch(error => {
-          console.error("Error exporting to Google Sheets:", error);
-          alert("Failed to export emails to Google Sheets.");
-        });
-      });
-    }
-  </script>
-</body>
+  </script></body>
 </html>
