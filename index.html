@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,16 +12,18 @@
       font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f5f7fa;
-      color: #333;
+      background-color: #F3F4F6;
+      color: #1F2937;
     }
+
     header {
-      background: linear-gradient(to right, #00796b, #004d40);
+      background: linear-gradient(to right, #1E3A8A, #9333EA);
       color: white;
       text-align: center;
       padding: 30px 20px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
+
     main {
       max-width: 900px;
       margin: 30px auto;
@@ -29,7 +32,9 @@
       border-radius: 12px;
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     }
+
     label { font-weight: bold; }
+
     input, button, select {
       font-size: 16px;
       padding: 10px;
@@ -39,56 +44,68 @@
       margin-bottom: 15px;
       box-sizing: border-box;
     }
+
     button {
-      background: #00796b;
+      background: #9333EA;
       color: white;
       border: none;
       cursor: pointer;
       transition: background 0.3s, transform 0.1s;
     }
+
     button:hover {
-      background: #004d40;
+      background: #7E22CE;
       transform: translateY(-2px);
     }
+
     footer {
       text-align: center;
       margin-top: 30px;
       padding: 20px;
-      background: #004d40;
+      background: #1E3A8A;
       color: white;
     }
-    #email-converter-section {
+
+    #generator-section {
       display: none;
     }
   </style>
 </head>
 <body>
+
   <header>
     <h1>One Two Gmail Generator</h1>
-  </header>  <main>
+  </header>
+
+  <main>
     <section>
       <label for="access-code">Enter Access Code:</label>
       <input type="password" id="access-code" placeholder="Enter your access code">
       <button id="access-btn">Submit Access Code</button>
-    </section><section id="generator-section" style="display: none;">
-  <label for="username">Enter Gmail Username:</label>
-  <input type="text" id="username" placeholder="example" autocomplete="off">
-  <p>@gmail.com is automatically added.</p>
-  <button id="generate-btn">Generate Gmail Variations</button>
-  <button id="copy-btn">Copy All Variations</button>
-  <div id="result"></div>
+    </section>
 
-  <label for="download-format">Download as:</label>
-  <select id="download-format">
-    <option value="txt">TXT</option>
-    <option value="csv">CSV</option>
-  </select>
-  <button id="download-btn">Download</button>
-</section>
+    <section id="generator-section">
+      <label for="username">Enter Gmail Username:</label>
+      <input type="text" id="username" placeholder="example" autocomplete="off">
+      <p>@gmail.com is automatically added.</p>
+      <button id="generate-btn">Generate Gmail Variations</button>
+      <button id="copy-btn">Copy All Variations</button>
+      <div id="result"></div>
 
-  </main>  <footer>
+      <label for="download-format">Download as:</label>
+      <select id="download-format">
+        <option value="txt">TXT</option>
+        <option value="csv">CSV</option>
+      </select>
+      <button id="download-btn">Download</button>
+    </section>
+  </main>
+
+  <footer>
     <p>&copy; 2025 One Two Gmail Generator</p>
-  </footer>  <script>
+  </footer>
+
+  <script>
     const masterAccessCode = 2025;
 
     document.getElementById("access-btn").addEventListener("click", function() {
@@ -150,5 +167,7 @@
       a.click();
       document.body.removeChild(a);
     });
-  </script></body>
+  </script>
+
+</body>
 </html>
