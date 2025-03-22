@@ -3,168 +3,189 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enhanced Gmail Generator</title>
+  <title>One Two Gmail Tool</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f4f4f4;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+      background-color: #F3F4F6;
+      color: #1F2937;
     }
 
     header {
-      background: linear-gradient(to right, #4a00e0, #8e2de2);
+      background: linear-gradient(to right, #1E3A8A, #9333EA);
       color: white;
       text-align: center;
       padding: 30px 20px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      animation: fadeInDown 0.6s ease-in-out;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     main {
-      max-width: 800px;
+      max-width: 900px;
       margin: 30px auto;
       padding: 20px;
       background: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      flex-grow: 1;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 0.5s ease-in-out;
     }
 
-    label {
-      display: block;
-      margin-bottom: 5px;
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      background: #1E3A8A;
+      color: white;
+      border-radius: 12px 12px 0 0;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 15px;
+      transition: background 0.3s;
+    }
+
+    .tab:hover {
+      background: #7E22CE;
+    }
+
+    .active-tab {
+      background: #9333EA;
       font-weight: bold;
     }
 
-    input, button, select {
+    .content {
+      display: none;
+      padding: 20px;
+    }
+
+    .active-content {
+      display: block;
+    }
+
+    label { font-weight: bold; }
+
+    input, button, select, textarea {
       font-size: 16px;
       padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ddd;
+      border-radius: 8px;
+      border: 1px solid #ccc;
       width: 100%;
       margin-bottom: 15px;
       box-sizing: border-box;
     }
 
     button {
-      background: #8e2de2;
+      background: #9333EA;
       color: white;
       border: none;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: background 0.3s, transform 0.1s;
     }
 
     button:hover {
-      background: #6a1b9a;
-    }
-
-    #result {
-      margin-top: 20px;
-      padding: 10px;
-      border: 1px solid #eee;
-      background: #f9f9f9;
-      border-radius: 5px;
-      white-space: pre-wrap;
+      background: #7E22CE;
+      transform: translateY(-2px);
     }
 
     footer {
       text-align: center;
+      margin-top: 30px;
       padding: 20px;
-      background: #333;
+      background: #1E3A8A;
       color: white;
     }
 
-    #generator-section {
-      display: none;
+    #result ul {
+      padding: 0;
+      list-style: none;
     }
 
-    #download-options {
-      position: relative;
-      display: inline-block;
-    }
-
-    #download-dropdown {
-      display: none;
-      position: absolute;
-      background-color: #f9f9f9;
-      min-width: 160px;
-      box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-      z-index: 1;
-    }
-
-    #download-dropdown a {
-      color: black;
-      padding: 12px 16px;
-      text-decoration: none;
-      display: block;
-    }
-
-    #download-dropdown a:hover {
-      background-color: #f1f1f1;
-    }
-
-    .show {
-      display: block;
+    #result ul li {
+      padding: 5px 0;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Enhanced Gmail Generator</h1>
+    <h1>One Two Gmail Tool</h1>
   </header>
 
   <main>
-    <section>
+    <div class="tabs">
+      <div class="tab active-tab" onclick="switchTab('gmail-gen')">Gmail Generator</div>
+      <div class="tab" onclick="switchTab('email-csv')">Convert to CSV</div>
+    </div>
+
+    <section id="gmail-gen" class="content active-content">
       <label for="access-code">Enter Access Code:</label>
       <input type="password" id="access-code" placeholder="Enter your access code">
       <button id="access-btn">Submit Access Code</button>
+
+      <div id="generator-section" style="display: none;">
+        <label for="username">Enter Gmail Username:</label>
+        <input type="text" id="username" placeholder="example" autocomplete="off">
+        <p>@gmail.com is automatically added.</p>
+        <button id="generate-btn">Generate Gmail Variations</button>
+        <button id="copy-btn">Copy All Variations</button>
+        <div id="result"></div>
+
+        <label for="download-format">Download as:</label>
+        <select id="download-format">
+          <option value="txt">TXT</option>
+          <option value="csv">CSV</option>
+        </select>
+        <button id="download-btn">Download</button>
+      </div>
     </section>
 
-    <section id="generator-section">
-      <label for="username">Enter Gmail Username:</label>
-      <input type="text" id="username" placeholder="example" autocomplete="off">
-      <p>@gmail.com is automatically added.</p>
-      <button id="generate-btn">Generate Gmail Variations</button>
-      <button id="copy-btn">Copy All Variations</button>
-      <div id="result"></div>
-
-      <div id="download-options">
-        <button id="download-btn">Download</button>
-        <div id="download-dropdown" class="dropdown-content">
-          <a href="#" data-format="txt">TXT</a>
-          <a href="#" data-format="csv">CSV</a>
-          <a href="#" data-format="json">JSON</a>
-        </div>
-      </div>
+    <section id="email-csv" class="content">
+      <label for="email-list">Enter Emails (one per line):</label>
+      <textarea id="email-list" rows="6" placeholder="example@gmail.com"></textarea>
+      <button id="convert-btn">Convert to CSV</button>
+      <button id="download-csv-btn">Download CSV</button>
+      <div id="csv-output"></div>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2025 Enhanced Gmail Generator</p>
+    <p>&copy; 2025 One Two Gmail Tool</p>
   </footer>
 
   <script>
+    function switchTab(tab) {
+      document.querySelectorAll(".content").forEach(content => content.classList.remove("active-content"));
+      document.querySelectorAll(".tab").forEach(tabEl => tabEl.classList.remove("active-tab"));
+      document.getElementById(tab).classList.add("active-content");
+      document.querySelector(`.tabs .tab:nth-child(${tab === 'gmail-gen' ? 1 : 2})`).classList.add("active-tab");
+    }
+
     const masterAccessCode = 2025;
 
     document.getElementById("access-btn").addEventListener("click", function() {
       const accessCode = Number(document.getElementById("access-code").value.trim());
       if (accessCode === masterAccessCode) {
-        grantMasterAccess();
+        document.getElementById("generator-section").style.display = "block";
       } else {
-        alert("Invalid access code. Only the master code allows access.");
+        alert("Invalid access code.");
       }
     });
-
-    function grantMasterAccess() {
-      alert("Master access granted! Unlimited variations enabled.");
-      document.getElementById("generator-section").style.display = "block";
-    }
 
     document.getElementById("generate-btn").addEventListener("click", function() {
       const username = document.getElementById("username").value.trim();
@@ -174,72 +195,36 @@
       }
 
       let variations = generateDotVariations(username);
-      document.getElementById("result").innerHTML = `<p>${variations.length} variations generated:</p>` +
-        variations.join("\n");
+      document.getElementById("result").innerHTML = `<ul>${variations.map(v => `<li>${v}</li>`).join("")}</ul>`;
     });
 
     function generateDotVariations(username) {
       let variations = new Set();
-      const len = username.length;
-      for (let i = 1; i < (1 << (len - 1)); i++) {
+      for (let i = 1; i < (1 << (username.length - 1)); i++) {
         let variation = username[0];
-        for (let j = 0; j < len - 1; j++) {
+        for (let j = 0; j < username.length - 1; j++) {
           if (i & (1 << j)) variation += ".";
           variation += username[j + 1];
         }
-        if (!variation.includes("..") && !variation.startsWith(".") && !variation.endsWith(".")) {
-          variations.add(`${variation}@gmail.com`);
-        }
+        variations.add(`${variation}@gmail.com`);
       }
       return Array.from(variations);
     }
 
-    document.getElementById("copy-btn").addEventListener("click", function() {
-      const emails = document.getElementById("result").innerText.split("\n").slice(1).join("\n");
-      navigator.clipboard.writeText(emails).then(function() {
-        alert("Variations copied to clipboard!");
-      }, function() {
-        alert("Failed to copy variations.");
-      });
+    document.getElementById("convert-btn").addEventListener("click", function() {
+      let emails = document.getElementById("email-list").value.trim().split("\n").filter(e => e);
+      document.getElementById("csv-output").innerText = emails.join(",\n");
     });
 
-    document.getElementById("download-btn").addEventListener("click", function() {
-      document.getElementById("download-dropdown").classList.toggle("show");
+    document.getElementById("download-csv-btn").addEventListener("click", function() {
+      let content = document.getElementById("csv-output").innerText;
+      let blob = new Blob([content], { type: "text/csv" });
+      let a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "emails.csv";
+      a.click();
     });
+  </script>
 
-    window.onclick = function(event) {
-      if (!event.target.matches('#download-btn')) {
-        let dropdowns = document.getElementsByClassName("dropdown-content");
-        for (let i = 0; i < dropdowns.length; i++) {
-          let openDropdown = dropdowns[i];
-          if (openDropdown.classList.contains('show')) {
-            openDropdown.classList.remove('show');
-          }
-        }
-      }
-    }
-
-    document.getElementById("download-dropdown").addEventListener("click", function(event) {
-      if (event.target.tagName === 'A') {
-        const format = event.target.getAttribute("data-format");
-        const emails = document.getElementById("result").innerText.split("\n").slice(1);
-        if (emails.length === 0) {
-          alert("No emails to download.");
-          return;
-        }
-
-        let content;
-        let contentType;
-
-        if (format === "csv") {
-          content = emails.join(",\n");
-          contentType = "text/csv";
-        } else if (format === "json") {
-          content = JSON.stringify(emails);
-          contentType = "application/json";
-        } else {
-          content = emails.join("\n");
-          contentType = "text/plain";
-        }
-
-        let blob = new Blob(
+</body>
+</html>
