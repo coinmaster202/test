@@ -20,12 +20,6 @@
       text-align: center;
       padding: 30px 20px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      animation: fadeInDown 0.6s ease-in-out;
-    }
-
-    @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     main {
@@ -35,21 +29,15 @@
       background: white;
       border-radius: 12px;
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-      animation: fadeIn 0.5s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
     }
 
     .tabs {
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-around;
       background: #1E3A8A;
       color: white;
       border-radius: 12px 12px 0 0;
-      overflow: hidden;
       cursor: pointer;
     }
 
@@ -145,13 +133,6 @@
         <button id="generate-btn">Generate Gmail Variations</button>
         <button id="copy-btn">Copy All Variations</button>
         <div id="result"></div>
-
-        <label for="download-format">Download as:</label>
-        <select id="download-format">
-          <option value="txt">TXT</option>
-          <option value="csv">CSV</option>
-        </select>
-        <button id="download-btn">Download</button>
       </div>
     </section>
 
@@ -176,54 +157,81 @@
       document.querySelector(`.tabs .tab:nth-child(${tab === 'gmail-gen' ? 1 : 2})`).classList.add("active-tab");
     }
 
-    const masterAccessCode = 2025;
-
-    document.getElementById("access-btn").addEventListener("click", function() {
-      const accessCode = Number(document.getElementById("access-code").value.trim());
-      if (accessCode === masterAccessCode) {
+    document.getElementById("access-btn").addEventListener("click", function () {
+      if (document.getElementById("access-code").value.trim() === "2025") {
         document.getElementById("generator-section").style.display = "block";
+        setTimeout(() => document.getElementById("username").focus(), 100);
       } else {
         alert("Invalid access code.");
       }
     });
 
-    document.getElementById("generate-btn").addEventListener("click", function() {
+    document.getElementById("generate-btn").addEventListener("click", debounce(generateEmails, 300));
+
+    function generateEmails() {
       const username = document.getElementById("username").value.trim();
       if (!username) {
         alert("Please enter a valid Gmail username.");
         return;
       }
 
-      let variations = generateDotVariations(username);
-      document.getElementById("result").innerHTML = `<ul>${variations.map(v => `<li>${v}</li>`).join("")}</ul>`;
-    });
+      const resultContainer = document.getElementById("result");
+      resultContainer.innerHTML = "<p>Generating...</p>";
 
-    function generateDotVariations(username) {
-      let variations = new Set();
-      for (let i = 1; i < (1 << (username.length - 1)); i++) {
-        let variation = username[0];
-        for (let j = 0; j < username.length - 1; j++) {
-          if (i & (1 << j)) variation += ".";
-          variation += username[j + 1];
-        }
-        variations.add(`${variation}@gmail.com`);
-      }
-      return Array.from(variations);
+      setTimeout(() => {
+        let variations = generateDotVariations(username);
+        displayVariations(variations);
+      }, 10);
     }
 
-    document.getElementById("convert-btn").addEventListener("click", function() {
-      let emails = document.getElementById("email-list").value.trim().split("\n").filter(e => e);
-      document.getElementById("csv-output").innerText = emails.join(",\n");
-    });
+    function generateDotVariations(username) {
+      let results = new Set();
+      let queue = [username];
 
-    document.getElementById("download-csv-btn").addEventListener("click", function() {
-      let content = document.getElementById("csv-output").innerText;
-      let blob = new Blob([content], { type: "text/csv" });
-      let a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "emails.csv";
-      a.click();
-    });
+      for (let i = 0; i < username.length - 1; i++) {
+        let size = queue.length;
+        for (let j = 0; j < size; j++) {
+          let current = queue[j];
+          let newVariation = current.slice(0, i + 1) + "." + current.slice(i + 1);
+          if (!results.has(newVariation)) {
+            results.add(newVariation);
+            queue.push(newVariation);
+          }
+        }
+      }
+
+      return Array.from(results).map(v => `${v}@gmail.com`);
+    }
+
+    function displayVariations(variations) {
+      const resultContainer = document.getElementById("result");
+      resultContainer.innerHTML = "";
+
+      if (variations.length === 0) {
+        resultContainer.innerHTML = "<p>No variations found.</p>";
+        return;
+      }
+
+      let fragment = document.createDocumentFragment();
+      let ul = document.createElement("ul");
+
+      variations.forEach(email => {
+        let li = document.createElement("li");
+        li.textContent = email;
+        ul.appendChild(li);
+      });
+
+      fragment.appendChild(ul);
+      resultContainer.appendChild(fragment);
+    }
+
+    function debounce(func, delay) {
+      let timer;
+      return function () {
+        clearTimeout(timer);
+        timer = setTimeout(() => func.apply(this, arguments), delay);
+      };
+    }
   </script>
 
 </body>
