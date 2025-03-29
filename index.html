@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>One Two Gmail Tool</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"/>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -232,6 +232,75 @@
         timer = setTimeout(() => func.apply(this, arguments), delay);
       };
     }
+
+    document.getElementById("convert-btn").addEventListener("click", () => {
+      const textarea = document.getElementById("email-list").value;
+      const emails = textarea
+        .split("\\n")
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
+
+      if (emails.length === 0) {
+        alert("Please enter at least one email.");
+        return;
+      }
+
+      const csv = emails.map(email => `\"${email}\"`).join(",\\n");
+      document.getElementById("csv-output").innerHTML = `<pre>${csv}</pre>`;
+    });
+
+    document.getElementById("download-csv-btn").addEventListener("click", () => {
+      const textarea = document.getElementById("email-list").value;
+      const emails = textarea
+        .split("\\n")
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
+
+      if (emails.length === 0) {
+        alert("No emails to download. Convert first.");
+        return;
+      }
+
+      const csvContent = emails.map(email => `\"${email}\"`).join(",\\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "emails.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Inject language dropdown with full list
+    const header = document.querySelector("header");
+    const langSelect = document.createElement("select");
+    langSelect.id = "language-selector";
+    langSelect.style.marginTop = "10px";
+    langSelect.style.padding = "8px";
+    langSelect.style.borderRadius = "8px";
+    langSelect.style.border = "none";
+
+    const supportedLangs = [...]; // full list already in your update, use same array as inserted previously
+
+    supportedLangs.forEach(([code, name]) => {
+      const option = document.createElement("option");
+      option.value = code;
+      option.textContent = name;
+      langSelect.appendChild(option);
+    });
+
+    langSelect.addEventListener("change", function () {
+      const selectedLang = this.value;
+      localStorage.setItem("lang", selectedLang);
+      setTimeout(() => {
+        location.href = `https://translate.google.com/translate?hl=${selectedLang}&sl=auto&u=` + encodeURIComponent(location.href);
+      }, 500);
+    });
+
+    header.appendChild(langSelect);
+    const savedLang = localStorage.getItem("lang");
+    if (savedLang) langSelect.value = savedLang;
   </script>
 
 </body>
