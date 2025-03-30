@@ -134,6 +134,12 @@
     #loader { text-align: center; display: none; }
     #success-message { text-align: center; color: green; font-weight: bold; display: none; }
     #copy-success { display: none; color: green; font-weight: bold; text-align: center; margin-top: -10px; margin-bottom: 10px; }
+    #variation-count-display {
+      text-align: center;
+      font-size: 14px;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
   </style>
   <script>
     (() => {
@@ -158,23 +164,24 @@
   </div>
   <section id="gmail-gen" class="content active-content">
     <input type="password" id="access-code" placeholder="Enter your access code" aria-label="Access code">
-    <button id="access-btn" title="Submit access code">Submit Access Code</button>
+    <button id="access-btn">Submit Access Code</button>
     <div id="generator-section" style="display:none;">
       <input type="text" id="username" placeholder="Enter Gmail username" aria-label="Gmail username">
       <select id="variation-count" aria-label="Number of variations"></select>
+      <div id="variation-count-display"></div>
       <div id="loader">Generating...</div>
       <div id="success-message">Gmail variations generated!</div>
-      <button id="generate-btn" title="Generate Gmail variations">Generate Gmail Variations</button>
-      <button id="copy-btn" title="Copy all generated variations">Copy All Variations</button>
+      <button id="generate-btn">Generate Gmail Variations</button>
+      <button id="copy-btn">Copy All Variations</button>
       <div id="copy-success">Copied!</div>
-      <button id="download-variations-btn" title="Download variations as CSV">Download CSV</button>
+      <button id="download-variations-btn">Download CSV</button>
       <div id="result"></div>
     </div>
   </section>
   <section id="email-csv" class="content">
-    <textarea id="email-list" rows="6" placeholder="example@gmail.com" aria-label="Email list input"></textarea>
-    <button id="convert-btn" title="Convert to CSV">Convert to CSV</button>
-    <button id="download-csv-btn" title="Download email list CSV">Download CSV</button>
+    <textarea id="email-list" rows="6" placeholder="example@gmail.com"></textarea>
+    <button id="convert-btn">Convert to CSV</button>
+    <button id="download-csv-btn">Download CSV</button>
     <div id="csv-output"></div>
   </section>
 </main>
@@ -211,6 +218,18 @@
       alert("Invalid access code.");
     }
   };
+
+  document.getElementById("username").addEventListener("input", () => {
+    const username = document.getElementById("username").value.trim();
+    const display = document.getElementById("variation-count-display");
+    if (/^[a-zA-Z0-9]+$/.test(username)) {
+      const positions = username.length - 1;
+      const total = Math.pow(2, positions) - 1;
+      display.textContent = `Total dot variations possible: ${total}`;
+    } else {
+      display.textContent = "";
+    }
+  });
 
   document.getElementById("generate-btn").onclick = () => {
     const username = document.getElementById("username").value.trim();
@@ -272,19 +291,21 @@
 
   function generateDotVariations(username, limit = Infinity) {
     const results = new Set();
+    const positions = username.length - 1;
+    const total = Math.pow(2, positions);
 
-    const recurse = (prefix, index) => {
-      if (results.size >= limit) return;
-      if (index === username.length) {
-        if (prefix !== username) results.add(prefix);
-        return;
+    for (let i = 1; i < total && results.size < limit; i++) {
+      let variation = "";
+      for (let j = 0; j < username.length; j++) {
+        variation += username[j];
+        if (j < username.length - 1 && (i & (1 << (positions - 1 - j)))) {
+          variation += ".";
+        }
       }
-      recurse(prefix + username[index], index + 1);
-      if (index > 0) recurse(prefix + '.' + username[index], index + 1);
-    };
+      results.add(`${variation}@gmail.com`);
+    }
 
-    recurse(username[0], 1);
-    return Array.from(results).slice(0, limit).map(v => `${v}@gmail.com`);
+    return Array.from(results).slice(0, limit);
   }
 
   function displayVariations(variations) {
