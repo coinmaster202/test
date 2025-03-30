@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -17,289 +18,289 @@
       --input-border: #ccc;
       --input-disabled: #e5e7eb;
       --input-disabled-text: #9ca3af;
-    }body.dark {
-  --bg: #111827;
-  --text: #F9FAFB;
-  --card: #1F2937;
-  --tab-bg: #374151;
-  --tab-hover: #6B21A8;
-  --tab-active: #9333EA;
-  --button-bg: #6D28D9;
-  --button-hover: #5B21B6;
-  --input-border: #4B5563;
-  --input-disabled: #374151;
-  --input-disabled-text: #9CA3AF;
-}
-
-body {
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: var(--bg);
-  color: var(--text);
-}
-
-header {
-  background: linear-gradient(to right, var(--tab-bg), var(--tab-active));
-  color: white;
-  text-align: center;
-  padding: 30px 20px;
-  position: relative;
-}
-
-#theme-toggle {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  background: transparent;
-  border: 2px solid white;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-#user-location {
-  font-size: 14px;
-  text-align: center;
-  color: white;
-  opacity: 0.8;
-  margin-top: 5px;
-}
-
-main {
-  max-width: 900px;
-  margin: 30px auto;
-  padding: 20px;
-  background: var(--card);
-  border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-}
-
-.tabs {
-  display: flex;
-  justify-content: space-around;
-  background: var(--tab-bg);
-  color: white;
-  border-radius: 12px 12px 0 0;
-  cursor: pointer;
-}
-
-.tab {
-  flex: 1;
-  text-align: center;
-  padding: 15px;
-  transition: background 0.3s;
-}
-
-.tab:hover { background: var(--tab-hover); }
-.active-tab { background: var(--tab-active); font-weight: bold; }
-
-.content { display: none; padding: 20px; }
-.active-content { display: block; }
-
-input, button, select, textarea {
-  width: 100%;
-  margin-bottom: 15px;
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid var(--input-border);
-  background: var(--card);
-  color: var(--text);
-  box-sizing: border-box;
-}
-
-button {
-  background: var(--button-bg);
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.1s;
-}
-
-button:hover {
-  background: var(--button-hover);
-  transform: translateY(-2px);
-}
-
-select[disabled] {
-  background: var(--input-disabled);
-  color: var(--input-disabled-text);
-  cursor: not-allowed;
-}
-
-footer {
-  text-align: center;
-  background: var(--tab-bg);
-  color: white;
-  padding: 20px;
-}
-
-#result ul, #csv-output ul {
-  list-style: none;
-  padding: 0;
-}
-
-#result li, #csv-output li {
-  padding: 5px 0;
-}
-
-#loader { text-align: center; display: none; }
-#success-message { text-align: center; color: green; font-weight: bold; display: none; }
-#copy-success { display: none; color: green; font-weight: bold; text-align: center; margin-top: -10px; margin-bottom: 10px; }
-
+    }
+    body.dark {
+      --bg: #111827;
+      --text: #F9FAFB;
+      --card: #1F2937;
+      --tab-bg: #374151;
+      --tab-hover: #6B21A8;
+      --tab-active: #9333EA;
+      --button-bg: #6D28D9;
+      --button-hover: #5B21B6;
+      --input-border: #4B5563;
+      --input-disabled: #374151;
+      --input-disabled-text: #9CA3AF;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+    header {
+      background: linear-gradient(to right, var(--tab-bg), var(--tab-active));
+      color: white;
+      text-align: center;
+      padding: 30px 20px;
+      position: relative;
+    }
+    #theme-toggle {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: transparent;
+      border: 2px solid white;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    #user-location {
+      font-size: 14px;
+      text-align: center;
+      color: white;
+      opacity: 0.8;
+      margin-top: 5px;
+    }
+    main {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 20px;
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      background: var(--tab-bg);
+      color: white;
+      border-radius: 12px 12px 0 0;
+      cursor: pointer;
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 15px;
+      transition: background 0.3s;
+    }
+    .tab:hover { background: var(--tab-hover); }
+    .active-tab { background: var(--tab-active); font-weight: bold; }
+    .content { display: none; padding: 20px; }
+    .active-content { display: block; }
+    input, button, select, textarea {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--input-border);
+      background: var(--card);
+      color: var(--text);
+      box-sizing: border-box;
+    }
+    button {
+      background: var(--button-bg);
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.1s;
+    }
+    button:hover {
+      background: var(--button-hover);
+      transform: translateY(-2px);
+    }
+    select[disabled] {
+      background: var(--input-disabled);
+      color: var(--input-disabled-text);
+      cursor: not-allowed;
+    }
+    footer {
+      text-align: center;
+      background: var(--tab-bg);
+      color: white;
+      padding: 20px;
+    }
+    #result ul, #csv-output ul {
+      list-style: none;
+      padding: 0;
+    }
+    #result li, #csv-output li {
+      padding: 5px 0;
+    }
+    #loader { text-align: center; display: none; }
+    #success-message { text-align: center; color: green; font-weight: bold; display: none; }
+    #copy-success { display: none; color: green; font-weight: bold; text-align: center; margin-top: -10px; margin-bottom: 10px; }
   </style>
+  <script>
+    (() => {
+      const saved = localStorage.getItem("theme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      if (saved === "dark" || (!saved && prefersDark)) {
+        document.documentElement.classList.add("dark");
+      }
+    })();
+  </script>
 </head>
-<body><header>
+<body>
+<header>
   <h1>One Two Gmail Tool</h1>
-  <button id="theme-toggle">Dark Mode</button>
+  <button id="theme-toggle" title="Toggle light/dark theme">Dark Mode</button>
   <div id="user-location">Detecting location...</div>
-</header><main>
+</header>
+<main>
   <div class="tabs">
     <div class="tab active-tab" onclick="switchTab('gmail-gen')">Gmail Generator</div>
     <div class="tab" onclick="switchTab('email-csv')">Convert to CSV</div>
-  </div>  <section id="gmail-gen" class="content active-content">
-    <input type="password" id="access-code" placeholder="Enter your access code">
-    <button id="access-btn">Submit Access Code</button><div id="generator-section" style="display:none;">
-  <input type="text" id="username" placeholder="Enter Gmail username">
-  <select id="variation-count"></select>
-  <div id="loader">Generating...</div>
-  <div id="success-message">Gmail variations generated!</div>
-  <button id="generate-btn">Generate Gmail Variations</button>
-  <button id="copy-btn">Copy All Variations</button>
-  <div id="copy-success">Copied!</div>
-  <button id="download-variations-btn">Download CSV</button>
-  <div id="result"></div>
-</div>
-
-  </section>  <section id="email-csv" class="content">
-    <textarea id="email-list" rows="6" placeholder="example@gmail.com"></textarea>
-    <button id="convert-btn">Convert to CSV</button>
-    <button id="download-csv-btn">Download CSV</button>
+  </div>
+  <section id="gmail-gen" class="content active-content">
+    <input type="password" id="access-code" placeholder="Enter your access code" aria-label="Access code">
+    <button id="access-btn" title="Submit access code">Submit Access Code</button>
+    <div id="generator-section" style="display:none;">
+      <input type="text" id="username" placeholder="Enter Gmail username" aria-label="Gmail username">
+      <select id="variation-count" aria-label="Number of variations"></select>
+      <div id="loader">Generating...</div>
+      <div id="success-message">Gmail variations generated!</div>
+      <button id="generate-btn" title="Generate Gmail variations">Generate Gmail Variations</button>
+      <button id="copy-btn" title="Copy all generated variations">Copy All Variations</button>
+      <div id="copy-success">Copied!</div>
+      <button id="download-variations-btn" title="Download variations as CSV">Download CSV</button>
+      <div id="result"></div>
+    </div>
+  </section>
+  <section id="email-csv" class="content">
+    <textarea id="email-list" rows="6" placeholder="example@gmail.com" aria-label="Email list input"></textarea>
+    <button id="convert-btn" title="Convert to CSV">Convert to CSV</button>
+    <button id="download-csv-btn" title="Download email list CSV">Download CSV</button>
     <div id="csv-output"></div>
   </section>
-</main><footer>
+</main>
+<footer>
   <p>&copy; 2025 One Two Gmail Tool</p>
-</footer><script>
-let masterAccess = false;
-let latestVariations = [];
+</footer>
+<script>
+  let masterAccess = false;
+  let latestVariations = [];
 
-function switchTab(tab) {
-  document.querySelectorAll(".content").forEach(c => c.classList.remove("active-content"));
-  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active-tab"));
-  document.getElementById(tab).classList.add("active-content");
-  document.querySelector(`.tabs .tab:nth-child(${tab === 'gmail-gen' ? 1 : 2})`).classList.add("active-tab");
-}
-
-document.getElementById("access-btn").onclick = () => {
-  const code = document.getElementById("access-code").value.trim();
-  const select = document.getElementById("variation-count");
-  if (code === "2025") {
-    masterAccess = true;
-    select.innerHTML = `<option selected disabled>Unlimited (Master)</option>`;
-    select.disabled = true;
-    document.getElementById("generator-section").style.display = "block";
-  } else if (code === "1234") {
-    masterAccess = false;
-    select.disabled = false;
-    select.innerHTML = [5, 10, 15, 20].map(n => `<option value="${n}">${n}</option>`).join("");
-    document.getElementById("generator-section").style.display = "block";
-  } else {
-    alert("Invalid access code.");
-  }
-}
-
-document.getElementById("generate-btn").onclick = () => {
-  const username = document.getElementById("username").value.trim();
-  const count = parseInt(document.getElementById("variation-count").value);
-  const loader = document.getElementById("loader");
-  const success = document.getElementById("success-message");
-
-  if (!username || /[^a-zA-Z0-9]/.test(username)) {
-    alert("Invalid username. Only alphanumeric characters allowed.");
-    return;
+  function switchTab(tab) {
+    document.querySelectorAll(".content").forEach(c => c.classList.remove("active-content"));
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active-tab"));
+    document.getElementById(tab).classList.add("active-content");
+    document.querySelector(`.tabs .tab:nth-child(${tab === 'gmail-gen' ? 1 : 2})`).classList.add("active-tab");
   }
 
-  loader.style.display = "block";
-  success.style.display = "none";
-
-  setTimeout(() => {
-    const limit = masterAccess ? Infinity : count;
-    latestVariations = generateDotVariations(username, limit);
-    displayVariations(latestVariations);
-    loader.style.display = "none";
-    success.style.display = "block";
-    setTimeout(() => success.style.display = "none", 3000);
-  }, 500);
-};
-
-document.getElementById("copy-btn").onclick = () => {
-  if (latestVariations.length === 0) return;
-  const text = latestVariations.join("\n");
-  navigator.clipboard.writeText(text).then(() => {
-    const copied = document.getElementById("copy-success");
-    copied.style.display = "block";
-    setTimeout(() => copied.style.display = "none", 2000);
-  });
-};
-
-document.getElementById("download-variations-btn").onclick = () => {
-  if (latestVariations.length === 0) return;
-  const blob = new Blob([latestVariations.join("\n")], { type: 'text/csv' });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "gmail_variations.csv";
-  a.click();
-};
-
-document.getElementById("theme-toggle").onclick = () => {
-  document.body.classList.toggle("dark");
-  const mode = document.body.classList.contains("dark") ? "Light Mode" : "Dark Mode";
-  document.getElementById("theme-toggle").textContent = mode;
-  localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
-};
-
-(function applySavedTheme() {
-  const saved = localStorage.getItem("theme");
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  if (saved === "dark" || (!saved && prefersDark)) {
-    document.body.classList.add("dark");
-    document.getElementById("theme-toggle").textContent = "Light Mode";
-  }
-})();
-
-function generateDotVariations(username, limit = Infinity) {
-  let results = new Set();
-  let queue = [username];
-  for (let i = 0; i < username.length - 1 && results.size < limit; i++) {
-    let size = queue.length;
-    for (let j = 0; j < size && results.size < limit; j++) {
-      let current = queue[j];
-      let newVariation = current.slice(0, i + 1) + "." + current.slice(i + 1);
-      if (!results.has(newVariation)) {
-        results.add(newVariation);
-        queue.push(newVariation);
-      }
+  document.getElementById("access-btn").onclick = () => {
+    const code = document.getElementById("access-code").value.trim();
+    const select = document.getElementById("variation-count");
+    if (code === "2025") {
+      masterAccess = true;
+      select.innerHTML = `<option selected disabled>Unlimited (Master)</option>`;
+      select.disabled = true;
+      document.getElementById("generator-section").style.display = "block";
+      document.getElementById("username").focus();
+    } else if (code === "1234") {
+      masterAccess = false;
+      select.disabled = false;
+      select.innerHTML = [5, 10, 15, 20].map(n => `<option value="${n}">${n}</option>`).join("");
+      document.getElementById("generator-section").style.display = "block";
+      document.getElementById("username").focus();
+    } else {
+      alert("Invalid access code.");
     }
+  };
+
+  document.getElementById("generate-btn").onclick = () => {
+    const username = document.getElementById("username").value.trim();
+    const count = parseInt(document.getElementById("variation-count").value);
+    const loader = document.getElementById("loader");
+    const success = document.getElementById("success-message");
+
+    if (!username || /[^a-zA-Z0-9]/.test(username) || username.startsWith('.') || username.endsWith('.')) {
+      alert("Invalid username. Use only letters/numbers, and do not start or end with a dot.");
+      return;
+    }
+
+    loader.style.display = "block";
+    success.style.display = "none";
+
+    setTimeout(() => {
+      const limit = masterAccess ? Infinity : count;
+      latestVariations = generateDotVariations(username, limit);
+      displayVariations(latestVariations);
+      loader.style.display = "none";
+      success.style.display = "block";
+      setTimeout(() => success.style.display = "none", 3000);
+    }, 500);
+  };
+
+  document.getElementById("copy-btn").onclick = () => {
+    if (latestVariations.length === 0) return;
+    const text = latestVariations.join("\n");
+    navigator.clipboard.writeText(text).then(() => {
+      const copied = document.getElementById("copy-success");
+      copied.style.display = "block";
+      setTimeout(() => copied.style.display = "none", 2000);
+    });
+  };
+
+  document.getElementById("download-variations-btn").onclick = () => {
+    if (latestVariations.length === 0) return;
+    const blob = new Blob([`Email\n${latestVariations.join("\n")}`], { type: 'text/csv' });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "gmail_variations.csv";
+    a.click();
+  };
+
+  document.getElementById("theme-toggle").onclick = () => {
+    document.body.classList.toggle("dark");
+    const mode = document.body.classList.contains("dark") ? "Light Mode" : "Dark Mode";
+    document.getElementById("theme-toggle").textContent = mode;
+    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+  };
+
+  (function applySavedTheme() {
+    const saved = localStorage.getItem("theme");
+    if (saved === "dark") {
+      document.body.classList.add("dark");
+      document.getElementById("theme-toggle").textContent = "Light Mode";
+    }
+  })();
+
+  function generateDotVariations(username, limit = Infinity) {
+    const results = new Set();
+
+    const recurse = (prefix, index) => {
+      if (results.size >= limit) return;
+      if (index === username.length) {
+        if (prefix !== username) results.add(prefix);
+        return;
+      }
+      recurse(prefix + username[index], index + 1);
+      if (index > 0) recurse(prefix + '.' + username[index], index + 1);
+    };
+
+    recurse(username[0], 1);
+    return Array.from(results).slice(0, limit).map(v => `${v}@gmail.com`);
   }
-  return Array.from(results).slice(0, limit).map(v => `${v}@gmail.com`);
-}
 
-function displayVariations(variations) {
-  const result = document.getElementById("result");
-  result.innerHTML = "<ul>" + variations.map(email => `<li>${email}</li>`).join("") + "</ul>";
-}
+  function displayVariations(variations) {
+    const result = document.getElementById("result");
+    result.innerHTML = "<ul>" + variations.map(email => `<li>${email}</li>`).join("") + "</ul>";
+  }
 
-fetch("https://ipapi.co/json")
-  .then(res => res.json())
-  .then(data => {
-    const locationText = `${data.city || ''}, ${data.region || ''}, ${data.country_name || ''}`;
-    document.getElementById("user-location").textContent = `Location: ${locationText}`;
-  })
-  .catch(() => {
-    document.getElementById("user-location").textContent = "Location unavailable";
-  });
-</script></body>
+  fetch("https://ipapi.co/json")
+    .then(res => res.json())
+    .then(data => {
+      const locationText = `${data.city || ''}, ${data.region || ''}, ${data.country_name || ''}`;
+      document.getElementById("user-location").textContent = `Location: ${locationText}`;
+    })
+    .catch(() => {
+      document.getElementById("user-location").textContent = "Location unavailable";
+    });
+</script>
+</body>
 </html>
