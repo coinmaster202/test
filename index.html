@@ -131,25 +131,26 @@
     #result li, #csv-output li {
       padding: 5px 0;
     }
-    #loader { text-align: center; display: none; }
-    #success-message { text-align: center; color: green; font-weight: bold; display: none; }
-    #copy-success { display: none; color: green; font-weight: bold; text-align: center; margin-top: -10px; margin-bottom: 10px; }
+    #loader, #success-message, #copy-success, #username-error {
+      text-align: center;
+    }
+    #loader { display: none; }
+    #success-message, #copy-success { color: green; font-weight: bold; display: none; }
+    #username-error { color: red; font-weight: bold; display: none; margin-bottom: 10px; }
     #variation-count-display {
       text-align: center;
       font-size: 14px;
       margin-bottom: 10px;
       color: var(--text);
     }
+    #progress-count {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text);
+      margin-top: -10px;
+      margin-bottom: 10px;
+    }
   </style>
-  <script>
-    (() => {
-      const saved = localStorage.getItem("theme");
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      if (saved === "dark" || (!saved && prefersDark)) {
-        document.documentElement.classList.add("dark");
-      }
-    })();
-  </script>
 </head>
 <body>
 <header>
@@ -166,15 +167,18 @@
     <input type="password" id="access-code" placeholder="Enter your access code" aria-label="Access code">
     <button id="access-btn">Submit Access Code</button>
     <div id="generator-section" style="display:none;">
+      <div id="username-error"></div>
       <input type="text" id="username" placeholder="Enter Gmail username" aria-label="Gmail username">
       <select id="variation-count" aria-label="Number of variations"></select>
       <div id="variation-count-display"></div>
+      <div id="progress-count"></div>
       <div id="loader">Generating...</div>
       <div id="success-message">Gmail variations generated!</div>
       <button id="generate-btn">Generate Gmail Variations</button>
       <button id="copy-btn">Copy All Variations</button>
       <div id="copy-success">Copied!</div>
       <button id="download-variations-btn">Download CSV</button>
+      <button onclick="resetGenerator()">Reset</button>
       <div id="result"></div>
     </div>
   </section>
@@ -206,22 +210,22 @@
       masterAccess = true;
       select.innerHTML = `<option selected disabled>Unlimited (Master)</option>`;
       select.disabled = true;
-      document.getElementById("generator-section").style.display = "block";
-      document.getElementById("username").focus();
     } else if (code === "1234") {
       masterAccess = false;
       select.disabled = false;
       select.innerHTML = [5, 10, 15, 20].map(n => `<option value="${n}">${n}</option>`).join("");
-      document.getElementById("generator-section").style.display = "block";
-      document.getElementById("username").focus();
     } else {
       alert("Invalid access code.");
+      return;
     }
+    document.getElementById("generator-section").style.display = "block";
+    document.getElementById("username").focus();
   };
 
   document.getElementById("username").addEventListener("input", () => {
     const username = document.getElementById("username").value.trim();
     const display = document.getElementById("variation-count-display");
+    document.getElementById("username-error").style.display = "none";
     if (/^[a-zA-Z0-9]+$/.test(username)) {
       const positions = username.length - 1;
       const total = Math.pow(2, positions) - 1;
@@ -236,14 +240,20 @@
     const count = parseInt(document.getElementById("variation-count").value);
     const loader = document.getElementById("loader");
     const success = document.getElementById("success-message");
+    const progress = document.getElementById("progress-count");
+
+    document.getElementById("username-error").style.display = "none";
 
     if (!username || /[^a-zA-Z0-9]/.test(username) || username.startsWith('.') || username.endsWith('.')) {
-      alert("Invalid username. Use only letters/numbers, and do not start or end with a dot.");
+      const err = document.getElementById("username-error");
+      err.textContent = "Invalid username. Use only letters/numbers, and do not start or end with a dot.";
+      err.style.display = "block";
       return;
     }
 
     loader.style.display = "block";
     success.style.display = "none";
+    progress.textContent = "";
 
     setTimeout(() => {
       const limit = masterAccess ? Infinity : count;
@@ -251,14 +261,14 @@
       displayVariations(latestVariations);
       loader.style.display = "none";
       success.style.display = "block";
+      progress.textContent = `Generated ${latestVariations.length} variations.`;
       setTimeout(() => success.style.display = "none", 3000);
     }, 500);
   };
 
   document.getElementById("copy-btn").onclick = () => {
     if (latestVariations.length === 0) return;
-    const text = latestVariations.join("\n");
-    navigator.clipboard.writeText(text).then(() => {
+    navigator.clipboard.writeText(latestVariations.join("\n")).then(() => {
       const copied = document.getElementById("copy-success");
       copied.style.display = "block";
       setTimeout(() => copied.style.display = "none", 2000);
@@ -274,10 +284,38 @@
     a.click();
   };
 
+  function resetGenerator() {
+    document.getElementById("username").value = "";
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("variation-count-display").textContent = "";
+    document.getElementById("progress-count").textContent = "";
+    document.getElementById("username-error").style.display = "none";
+  }
+
+  document.getElementById("convert-btn").onclick = () => {
+    const emails = document.getElementById("email-list").value
+      .split(/\s|,|\n/)
+      .map(e => e.trim())
+      .filter(e => e.includes("@"));
+
+    document.getElementById("csv-output").innerHTML = "<ul>" + emails.map(e => `<li>${e}</li>`).join("") + "</ul>";
+  };
+
+  document.getElementById("download-csv-btn").onclick = () => {
+    const emails = document.getElementById("email-list").value
+      .split(/\s|,|\n/)
+      .map(e => e.trim())
+      .filter(e => e.includes("@"));
+    const blob = new Blob([`Email\n${emails.join("\n")}`], { type: 'text/csv' });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "email_list.csv";
+    a.click();
+  };
+
   document.getElementById("theme-toggle").onclick = () => {
     document.body.classList.toggle("dark");
-    const mode = document.body.classList.contains("dark") ? "Light Mode" : "Dark Mode";
-    document.getElementById("theme-toggle").textContent = mode;
+    document.getElementById("theme-toggle").textContent = document.body.classList.contains("dark") ? "Light Mode" : "Dark Mode";
     localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
   };
 
@@ -293,7 +331,6 @@
     const results = new Set();
     const positions = username.length - 1;
     const total = Math.pow(2, positions);
-
     for (let i = 1; i < total && results.size < limit; i++) {
       let variation = "";
       for (let j = 0; j < username.length; j++) {
@@ -304,13 +341,11 @@
       }
       results.add(`${variation}@gmail.com`);
     }
-
-    return Array.from(results).slice(0, limit);
+    return Array.from(results);
   }
 
   function displayVariations(variations) {
-    const result = document.getElementById("result");
-    result.innerHTML = "<ul>" + variations.map(email => `<li>${email}</li>`).join("") + "</ul>";
+    document.getElementById("result").innerHTML = "<ul>" + variations.map(e => `<li>${e}</li>`).join("") + "</ul>";
   }
 
   fetch("https://ipapi.co/json")
